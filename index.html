@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
+
+
+  <link rel="icon" type="image/x-icon" href="./public/fav.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./lib/dist/ol-ext.min.css">
+  <!-- <link rel="nofollow" href=''> -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="./public/css/style.css">
+  <link rel="stylesheet" href="./public/css/sidebar.css">
+  <link rel="stylesheet" href="./public/css/mediaStyle.css">
+  <link rel="stylesheet" href="./public/css/querytool.css">
+  <link rel="stylesheet" href="./public/css/infostyle.css">
+
+  <!-- <script type="text/javascript" src="/public/js/gcharts.js"></script> -->
+
+  <title>Assam Map Portal</title>
+</head>
+
+
+<body id="body">
+
+  <div id="map-view">
+    <div id="map"></div>
+  </div>
+
+  <div id="featureInfo" style="display: none;">
+    <button id="closeInfoBtn" style="float: right;">&times;</button>
+    <div id="featureContent"></div>
+  </div>
+
+  <div class="container">
+    <nav id="nav_bar">
+
+
+      <button type="button" class="menu_sidebar_container-toggle">
+        <div id="menu_open" class="material-symbols-outlined">menu</div>
+        <div id="menu_close" class="material-symbols-outlined">menu_open</div>
+      </button>
+      <div id="logo">
+        <img src="./public/icons/fav.png"  style="border-radius:50%" alt="">
+      </div>
+      <div id="nav_title">
+        <h2>ASSAM STATE SPACE APPLICATION CENTER</h2>
+
+      </div>
+    </nav>
+
+    <div class="menu_sidebar_container">
+
+
+      <nav class="menu">
+
+        <ul class="side_menu_cat1">
+          <div class="side_menu_container_optins">
+            <li id="sidebar-datasets-toggle-btn">Datasets</li>
+            <ul class="side_menu_optin_block side_menu_cat2" id="sidebar-datasets">
+              <li id="sidebar-datasets-administrative-btn">Administrative</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-administrative"></ul>
+              <li id="sidebar-datasets-Infrastructure-btn">Infrastructure</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-Infrastructure"></ul>
+              <li id="sidebar-datasets-land-resource-btn">Land Resource</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-land-resource"></ul>
+              <li id="sidebar-datasets-water-resource-btn">Water Resource</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-water-resource"></ul>
+              <li id="sidebar-datasets-disaster-management-btn">Disaster Management</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-disaster-management"></ul>
+              <li id="sidebar-datasets-weather-climate-btn">Weather & Climate</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-weather-climate"></ul>
+              <li id="sidebar-datasets-utility-btn">Utility</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-utility"></ul>
+              <li id="sidebar-datasets-terrain-btn">Terrain</li>
+              <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-terrain"></ul>
+            </ul>
+          </div>
+
+          <div class="side_menu_container_optins">
+            <li id="sidebar-buffer-btn">Buffer Analysis</li>
+            <div class="side_menu_cat2" id="buffer_search">
+              <form id="bufferForm">
+                <label for="buffer-geometry-type">Select Geometry Type:</label>
+                <select id="buffer-geometry-type" name="buffer-geometry-type">
+                  <option value="Point">Point</option>
+                  <option value="LineString">Line</option>
+                </select>
+
+                <label for="bufferlayer-theme">Select Theme:</label>
+                <select id="bufferlayer-theme" name="bufferlayer-theme">
+                </select>
+
+                <label for="bufferlayer-filename">Select Layer:</label>
+                <select id="bufferlayer-filename" name="bufferlayer-filename">
+                </select>
+
+                 <label for="bufferlayer-attribute">Select Attribute:</label>
+                <select id="bufferlayer-attribute" name="bufferlayer-attribute">
+                </select>
+
+                <label for="buffer-radius">Enter Radius in [m]:</label>
+                <input type="number" id="buffer-radius" name="buffer-radius" placeholder="Enter Radius in meter">
+              </form>
+              <button id="createBuffer">Create</button>
+              <button id="clearBuffer">Clear</button>
+
+            </div>
+          </div>
+
+          <!-- nearby -->
+
+          <!-- dist -->
+          <!-- dist -->
+            <div class="side_menu_container_optins">
+            <li id="sidebar-districtwise-btn">District Level Analysis</li>
+            <div class="side_menu_cat2" id="districtwise_search">
+              <!-- <form id="districtwiseForm"> -->
+                <label for="districtwise-theme">Select Theme:</label>
+
+                     <input type="text" id="districtwise-theme" class="dropdown-input"
+                          placeholder="Select category..." readonly/>
+                        <div class="sidebar-dropdown-options" id="districtwise-themeOptions">
+                        </div>
+
+                    <label for="districtwise-filename">Select File:</label>
+                    <input type="text" id="districtwise-filename" class="dropdown-input"
+                          placeholder="Select category..."  readonly/>
+                        <div class="sidebar-dropdown-options" id="districtwiseFileOptions">
+                        </div>
+
+                    <!-- <label for="districtwise-attribute">Select Attribute:</label>
+                    <input type="text" id="districtwise-attribute" class="dropdown-input"
+                          placeholder="Select attribute..."  readonly/>
+                        <div class="sidebar-dropdown-options" id="districtwise-attribute-Options">
+                        </div> -->
+
+                        <label for="sidebar-filter-attribute">Select Attribute:</label>
+                <select id="sidebar-filter-attribute" name="sidebar-filter-attribute">
+                
+                </select>
+
+                           <label for="sidebar-filter-district">Select District:</label>
+                          <input type="text" id="sidebar-filter-district" class="dropdown-input"
+                              placeholder="Select category..." readonly />
+                          <div class="sidebar-dropdown-options" id="sidebar-filter-district-Options">
+                          </div>
+
+                          <label for="sidebar-filter-block">Select Block:</label>
+                          <input type="text" id="sidebar-filter-block" class="dropdown-input"
+                              placeholder="Select category..." readonly />
+                          <div class="sidebar-dropdown-options" id="sidebar-filter-block-Options">
+                          </div>
+
+                          <label for="sidebar-filter-village">Select Village:</label>
+                          <input type="text" id="sidebar-filter-village" class="dropdown-input"
+                              placeholder="Select category..." readonly />
+                          <div class="sidebar-dropdown-options" id="sidebar-filter-village-Options">
+                          </div>
+
+              <button id="createBoundaryLevelBufferFilter">Create</button>
+              <button id="clearBoundaryLevelBufferFilter">Clear</button>
+
+            </div>
+          </div>
+
+          
+
+          <div class="side_menu_container_optins">
+            <li id="sidebar-upload-btn">Upload And Visualize</li>
+            <div class="side_menu_cat2" id="upload">
+              <label for="fileInput">Choose <span style="color: red; font-size: .8em;"> .GeoJSON .kml .zip</span> </label>
+              <input type="file" id="fileInput" accept=".Geojson, .json, .kml, .zip">
+              <button id="uploadButton">Upload</button>
+              <button id="uploadClearButton">Clear</button>
+            </div>
+          </div>
+
+          <div class="side_menu_container_optins">
+            <li id="sidebar-geojson2kml-btn">Convert GeoJSON To KML</li>
+            <div class="side_menu_cat2" id="geojson2kml">
+              <label for="fileInput">Choose <span style="color: red; font-size: .8em;"> .GeoJSON </span> </label>
+              <input type="file" id="geojson2kmlFileInput" accept=".Geojson,">
+              <button id="geojson2kmlDownload">Convert</button>
+            </div>
+          </div>
+
+
+
+
+          <div class="side_menu_container_optins">
+            <li id="sidebar-geocode-btn">Search Location</li>
+            <div class="select-container, side_menu_cat2" id="geocode">
+              <label for="Search_area">Search : </label>
+              <input type="text" id="locationInput" placeholder="Enter location name">
+              <br>
+              <button id="clearButton">Clear</button>
+              <div id="resultContainer" class="result-container">
+                <!-- Results will be displayed here -->
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+        </ul>
+      </nav>
+      <div id="sidebar">
+
+        <ul>
+          <li class="sidebar_items">
+
+            <span id="toggleMapClickBtn" class="material-symbols-outlined">visibility_off</span>
+          </li>
+          <li class="sidebar_items" id="sidebar-zIn-btn">
+            <span class="material-symbols-outlined">zoom_in</span>
+          </li>
+
+          <li class="sidebar_items" id="sidebar-zOut-btn">
+            <span class="material-symbols-outlined">zoom_out</span>
+          </li>
+
+          <li class="sidebar_items" id="sidebar-home-btn">
+            <span class="material-symbols-outlined">home</span>
+          </li>
+
+          <li class="sidebar_items" id="sidebar-fullscr-btn">
+            <span class="material-symbols-outlined" id="sidebar-fullscrIn-btn">fullscreen</span>
+            <span class="material-symbols-outlined" id="sidebar-fullscrOut-btn">Fullscreen_exit</span>
+          </li>
+
+          <!-- DRAW TOOL -->
+          <li class="sidebar_items">
+            <span class="material-symbols-outlined" id="sidebar-draw-btn">edit</span>
+            <ul id="sidebar-draw" class="sub-menu">
+              <li data-draw="Point"><span class="material-symbols-outlined">radio_button_checked</span></li>
+              <li data-draw="LineString"><span class="material-symbols-outlined">timeline</span></li>
+              <li data-draw="Polygon"><span class="material-symbols-outlined">hexagon</span></li>
+              <li data-draw="Circle"><span class="material-symbols-outlined">circle</span></li>
+              <li data-draw="freehand"><span class="material-symbols-outlined">gesture</span></li>
+              <li id="draw_undo"><span class="material-symbols-outlined">undo</span></li>
+              <li data-draw="clear"><span class="material-symbols-outlined">ink_eraser</span></li>
+              <li><a style="color: black;" id="sidebar-draw-download" href="#"><span
+                    class="material-symbols-outlined">save</span></a></li>
+            </ul>
+          </li>
+
+          <!-- MEASURE TOOL -->
+          <li class="sidebar_items" id="sidebar-measure-btn">
+            <span class="material-symbols-outlined">query_stats</span>
+            <ul id="sidebar-measure" class="sub-menu">
+              <li data-measure="LineString"><span class="material-symbols-outlined">straighten</span></li>
+              <li data-measure="Polygon"><span class="material-symbols-outlined">square_foot</span></li>
+              <li data-measure="clear"><span class="material-symbols-outlined">ink_eraser</span></li>
+              <li><a style="color: black;" id="sidebar-measure-download" href="#"><span
+                    class="material-symbols-outlined">save</span></a></li>
+            </ul>
+          </li>
+
+
+          <li class="sidebar_items" id="sidebar-print-btn">
+            <span class="material-symbols-outlined">print</span>
+
+
+          </li>
+          <ul id="Print_tool" class="side_menu_popup">
+            <form id="printform">
+              <label for="format">Page size </label>
+              <select id="format">
+                <option value="a0">A0 (slow)</option>
+                <option value="a1">A1</option>
+                <option value="a2">A2</option>
+                <option value="a3">A3</option>
+                <option value="a4" selected>A4</option>
+                <option value="a5">A5 (fast)</option>
+              </select>
+              <label for="resolution">Resolution </label>
+              <select id="resolution">
+                <option value="72">72 dpi (fast)</option>
+                <option value="150">150 dpi</option>
+                <option value="200" selected>200 dpi</option>
+                <option value="300">300 dpi (slow)</option>
+              </select>
+              <label for="scale">Scale </label>
+              <select id="scale">
+                <option value="" id="current-scale-option" selected></option>
+                <option value="500">1:500,000</option>
+                <option value="250" >1:250,000</option>
+                <option value="100">1:100,000</option>
+                <option value="50">1:50,000</option>
+                <option value="25">1:25,000</option>
+                <option value="10">1:10,000</option>
+              </select>
+            </form>
+            <button id="export-pdf">Print</button>
+            <button id="dragSelect">Select</button>
+          </ul>
+
+          </li>
+
+
+
+          <!-- Pin Drop -->
+          <li class="sidebar_items">
+            <span class="material-symbols-outlined" id="sidebar-pindrop-btn">pin_drop</span>
+            <ul id="sidebar-pindrop" class="sub-menu, side_menu_popup">
+              <form class="form">
+                <label for="lat">Enter Latitude </label>
+                <input type="text" id="lat" placeholder="Latitude" value="">
+
+                <label for="lon">Enter Longitude</label>
+                <input type="text" id="lon" placeholder="Longitude" value="">
+
+              </form>
+              <button id="locate_Pindrop">Pindrop</button>
+              <button id="locate_Pinremove">Remove</button>
+            </ul>
+          </li>
+          <!-- Pin Drop -->
+
+
+
+          <li class="sidebar_items">
+            <span class="material-symbols-outlined" id="sidebar-queryTool-btn">filter_alt</span>
+            <ul id="querybuilder_tool" class="querybuilder_tool_poppup">
+
+              <div class="queryTool-builder-form">
+                <div class="queryTool-header">
+                  <h4>Query Builder</h4>
+                  <span id="query-collapse-icon" class="material-symbols-outlined">unfold_more</span>
+                </div>
+                <div id="queryTool-builder-container">
+                  <div class="queryTool-row">
+                    <div class="queryTool-field">
+                      <label for="queryTool-category">Select Category:</label>
+                      <div class="dropdown-container">
+                        <input type="text" id="queryTool-category" class="dropdown-input"
+                          placeholder="Select category..." readonly />
+                        <div class="dropdown-options" id="categoryOptions">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="queryTool-field">
+                      <label for="queryTool-file">Select File:</label>
+                      <div class="dropdown-container">
+                        <input type="text" id="queryTool-file" class="dropdown-input" placeholder="Select file..."
+                          readonly />
+                        <div class="dropdown-options" id="fileOptions">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="queryTool-row">
+                    <div class="queryTool-field">
+                      <label for="queryTool-label">Select label field:</label>
+                      <select id="queryTool-label">
+                        <option value="">-- Select --</option>
+                      </select>
+                    </div>
+                    <div class="queryTool-field">
+                      <label for="queryTool-zoom">Label zoom:</label>
+                      <select id="queryTool-zoom">
+                        <option value="14">14</option>
+                        <option value="12">12</option>
+                        <option value="10">10</option>
+                        <option value="8">8</option>
+                        <option value="5">5</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="queryTool-operator-section">
+                    <div class="queryTool-select-container-l">
+                      <select id="queryTool-left-select" multiple size="5"></select>
+                    </div>
+                    <div class="queryTool-button-group" id="queryTool-button-group">
+                      <div class="queryTool-operator-row">
+                        <button class="queryTool-operator-button1">></button>
+                        <button class="queryTool-operator-button1">&#60;</button>
+                        <button class="queryTool-operator-button1">%</button>
+
+                        <button class="queryTool-operator-button1">=</button>
+                      </div>
+                      <div class="queryTool-operator-row">
+
+                        <button class="queryTool-operator-button2">>=</button>
+                        <button class="queryTool-operator-button2">&#60;=</button>
+                        <button class="queryTool-operator-button2">&#60;&#62;</button>
+                      </div>
+                      <div class="queryTool-operator-row">
+
+                        <button class="queryTool-logic-button">OR</button>
+                        <button class="queryTool-logic-button">NOT</button>
+                      </div>
+                      <div class="queryTool-operator-row">
+
+                        <button class="queryTool-logic-button">AND</button>
+                        <button class="queryTool-logic-button">LIKE</button>
+                      </div>
+
+                    </div>
+                    <div class="queryTool-select-container-r">
+                      <select id="queryTool-right-select" multiple size="5"></select>
+                    </div>
+                  </div>
+                  <div class="queryTool-form-group">
+                    <label for="queryTool-queryInput">Query:</label>
+                    <textarea id="queryTool-queryInput" rows="3"></textarea>
+                  </div>
+                  <div class="queryTool-action-buttons">
+                    <button id="queryTool-select">Select</button>
+                    <button id="queryTool-undo">Undo</button>
+                    <button class="clear" id="queryTool-clear">Clear</button>
+                  </div>
+                </div>
+              </div>
+            </ul>
+          </li>
+
+          <li class="sidebar_items">
+            <span class="material-symbols-outlined" id="info-content-btn">info</span>
+            <div id="buffer-results">
+              <div id="buffer-head"></div>
+              <div id="buffer-chartdiv" style="display: none; width: 460px; height: 210px; margin: 15px auto;">
+                <canvas id="buffer-chart" style="border: none; outline: none;"></canvas>
+              </div>
+              <div id="buffer-table" style="margin-top: 20px;"></div>
+            </div>
+          </li>
+
+          <li class="sidebar_items">
+            <span class="material-symbols-outlined" id="info-content2-btn">info</span>
+            <div id="query-results">
+              <div id="query-head"></div>
+              <div id="query-chartdiv" style="display: none; width: 460px; height: 210px; margin: 15px auto;">
+                <canvas id="query-chart" style="border: none; outline: none;"></canvas>
+              </div>
+              <div id="query-table" style="margin-top: 10px;"></div>
+            </div>
+          </li>
+
+          <li class="sidebar_items" id="legend-btn">
+            <span class="material-symbols-outlined">clear_all</span>
+
+          </li>
+
+          <div id="scale-line-control-cont">
+            <div id='scale-line-control' class="scaleLine">
+            </div>
+          </div>
+
+
+        </ul>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <div id="base_layer_container">
+    <div id="base_layer_container_icon"><img src="./public/icons/allIcons.png" style="object-fit: cover; height: 100%;" alt=""></div>
+    <div id="base_layer_menu">
+      <ul id="base_layer_list" class=".side_menu_popup">
+        <li data-layer="osm"><label for="">O S M</label> <img src="./public/icons/osmIcon.png" alt=""> </li>
+        <li data-layer="standardLayer"><label for="">Esri Standard</label> <img src="./public/icons/terrainIcon.png" alt=""></li>
+        <li data-layer="hybridLayer"><label for="">Esri Hybrid</label> <img src="./public/icons/setelliteIcon2.png" alt=""></li>
+        <li data-layer="satelliteLayer"><label for="">Esri Satellite</label> <img src="./public/icons/seteliteIcon.png" alt=""></li>
+        <li data-layer="transportLayer"><label for="">Esri Transport</label> <img src="./public/icons/streetIcon.png" alt=""></li>
+                <li data-layer="osmHot"><label for="">OSM Humanitarian</label> <img src="./public/icons/osHumanitarian.png" alt=""></li>
+                <li data-layer="cartoLight"><label for="">Carto Light</label> <img src="./public/icons/cartoLightIcon.png" alt=""></li>
+                <li data-layer="cartoDark"><label for="">Carto Dark</label> <img src="./public/icons/cartoDarkIcon.png" alt=""></li>
+                <li data-layer="cartoVoyager"><label for="">Carto Voyager</label> <img src="./public/icons/cartoVoyagerIcon.png" alt=""></li>
+                <li data-layer="openTopo"><label for="">Open Topo</label> <img src="./public/icons/openTopoIcon.png" alt=""></li>
+        <li data-layer="googleSatelliteLayer"><label for="">Google Hybrid</label> <img src="./public/icons/googleHybridIcon.png" alt=""></li>
+                <li data-layer="none"><label for="">None</label> <img src="./public/icons/noneIcon.png" alt=""></li>
+
+      </ul>
+      </ul>
+    </div>
+
+   
+  </div>
+  </div>
+
+
+
+
+
+  <footer>
+    <div>
+      <div id="long_lat">
+        <p>Coordinate :</p>
+
+        <div id="lonlat_display" style="text-align: center;"> </div>
+
+      </div>
+      <div id="org_info">
+        <p> designed and Developed by ASSAC. &copy; 2024</p>
+      </div>
+    </div>
+  </footer>
+
+
+
+
+  
+
+
+  <div id="info">
+    <div id="info-content"></div>
+    <div id="info-toggle"><span class="material-symbols-outlined">close</span> </div>
+  </div>
+
+  <div id="popup-upload">
+    <div id="popup-upload-content"></div>
+    <div id="upload-info-toggle"><span class="material-symbols-outlined">close</span> </div>
+  </div>
+
+  </div>
+
+  <div id="legend">
+  </div>
+
+
+  <div id="aboutSection">
+  </div>
+
+  <div id="additionalTextSection">
+  </div>
+
+  <div id="overlaypopup" class="overlaypopup"></div>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script type="module" src="./main.js"></script>
+
+</body>
+
+</html>

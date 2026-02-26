@@ -1,0 +1,210 @@
+      
+.queryTool-builder-form{
+    border-radius: 10px;
+    width: 500px; /* Increased width to accommodate more buttons */
+    box-shadow: 0 4px 8px rgba(5, 5, 5, 0.258);
+    z-index: 100;
+    /* position: absolute;
+    right: 100px; */
+    
+}
+
+#queryTool-builder-container {
+    background-color: rgba(255, 255, 255, 0.352);
+    padding: 20px;
+}
+
+.queryTool-header {
+    background-color: #0e4a4c;
+    color: white;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+.queryTool-form-group {
+    margin-bottom: 15px;
+}
+
+.queryTool-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.queryTool-row .queryTool-field {
+    flex: 1;
+}
+
+#queryTool-builder-container label {
+    /* text-shadow: 0px 0px 2px #fdfdfd; */
+
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#queryTool-builder-container select, input[type="text"], textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.queryTool-select-container-l select[multiple] {
+    height: 145px; /* Height for select multiple boxes */
+}
+
+.queryTool-select-container-r select[multiple] {
+    height: 120px; /* Height for select multiple boxes */
+}
+
+.queryTool-operator-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Center vertically */
+    margin-bottom: 15px;
+    gap: 10px; /* Add spacing between elements */
+}
+
+.queryTool-select-container-l {
+    width: 40%; /* Adjust width for the select boxes */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.queryTool-select-container-r {
+    width: 40%; /* Adjust width for the select boxes */
+    display: flex;
+    flex-direction: column;
+}
+
+.queryTool-button-group {
+    display: flex;
+    flex-direction: column; /* Align all buttons horizontally */
+    justify-content: center;
+    align-items: center;
+    gap: 1px; /* Space between buttons */
+    flex-wrap: wrap; /* Allow wrapping if needed */
+}
+
+.queryTool-button-group .queryTool-operator-button1 {
+    background-color: #0e4a4c;
+    color: white;
+    border: none;
+    padding: 0px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.queryTool-button-group .queryTool-operator-button2 {
+    background-color: #0e4a4c;
+    color: white;
+    border: none;
+    padding: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.queryTool-button-group .queryTool-logic-button {
+    background-color: #0e4a4c;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    width: 60px; /* Slightly wider for logic buttons */
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.queryTool-action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1px; /* Add spacing between action buttons */
+}
+
+.queryTool-action-buttons button {
+    background-color: #0e4a4c;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1; /* Make buttons equal width */
+}
+
+.queryTool-action-buttons button.clear {
+    background-color: #0e4a4c;
+}
+
+.queryTool-operator-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1px;
+    margin-bottom: 3px;
+}
+
+/*  */
+
+.dropdown-container {
+position: relative;
+display: inline-block;
+width: 100%;
+}
+.dropdown-input {
+width: 100%;
+padding: 8px;
+border: 1px solid #ccc;
+border-radius: 4px;
+cursor: pointer;
+box-sizing: border-box;
+}
+.dropdown-options {
+position: absolute;
+top: 100%;
+left: 0;
+width: 100%;
+border: 1px solid #ccc;
+background-color: #fff;
+z-index: 10;
+max-height: 150px;
+overflow-y: auto;
+display: none;
+}
+.dropdown-option {
+padding: 8px;
+cursor: pointer;
+}
+.dropdown-option:hover {
+background-color: #f0f0f0;
+}
+
+#querybuilder_tool{
+    display: none;
+}
+#querybuilder_tool{
+    position: absolute;
+    top:10px;
+    left: 500px;
+
+}
+.queryTool-header{
+    
+}
+

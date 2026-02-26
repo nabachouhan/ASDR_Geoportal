@@ -1,0 +1,205 @@
+@import "node_modules/ol/ol.css";
+
+html,
+
+*{
+  font-family: 'roboto';
+}
+
+.montserrat-#nav_bar {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  /* background: url('./modules/mapp.jpg'); */
+
+}
+
+#map {
+  position: absolute;
+  top: 30px;
+  bottom: 30px;
+  width: 100%;
+}
+
+
+.material-symbols-outlined:hover {
+  cursor: pointer;
+  color: #525353;
+  
+}
+
+#layers_container {
+
+  position: absolute;
+  top: 72px;
+  left: 7px;
+}
+
+#layer_list {
+  display: none;
+  position: relative;
+  top: -30px;
+  left:30px;
+
+  background-color: #d1d1d1;
+  width: 100px;
+}
+
+
+
+#layers_container.expanded #layer_list {
+  max-height: 500px;
+  /* Set max-height to a value large enough to fit all content */
+}
+
+
+.custom-mouse-position {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  font-size: 12px;
+  padding: 7px;
+  background-color: #b7b7b7;
+  border: 1px solid #000;
+  border-radius: 14px;
+}
+
+
+/* ---------------------------------------------- */
+
+.ol-tooltip {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  opacity: 0.7;
+  font-size: 12px;
+
+
+}
+.ol-tooltip-measure {
+  font-family: Arial, Helvetica, sans-serif;
+  opacity: 1;
+  font-weight: bolder;
+}
+.ol-tooltip-static {
+  background-color: #ffcc339c;
+  color: black;
+  border: 1px solid white;
+}
+.ol-tooltip-measure:before,
+.ol-tooltip-static:before {
+  border-top: 6px solid rgba(0, 0, 0, 0.5);
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  margin-left: -7px;
+  left: 50%;
+}
+.ol-tooltip-static:before {
+  border-top-color: #ffcc33;
+}
+
+/* --------------------------------------------------------- */
+
+.overlaypopup {
+  position: absolute;
+  background: white;
+  padding: 5px;
+  border: 1px solid black;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  pointer-events: none;
+  background: #fd0000;
+}
+
+
+
+/* *********************** */
+
+
+#popup-upload {
+  position: absolute;
+  top: 50px;
+  right: 130px;
+  background-color: rgba(255, 255, 255, 0.747);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #b6b6b6;
+  min-width: 300px; /* Adjusted for table */
+  z-index: 1000;
+  display: none;
+}
+#popup-upload table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#popup-upload th, #popup-upload td {
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #b8b8b8;
+}
+
+#popup-upload th {
+  background-color: #f4f4f49a;
+  font-weight: bold;
+}
+
+
+
+
+#infoChart{
+  height: 350px;
+  width: 650px;
+  display: none;
+}
+
+
+.info-detail-toggle-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 10px;
+}
+.info-detail-toggle-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #ccc;
+  cursor: pointer;
+  width: 50%;
+}
+.info-detail-toggle-button.active {
+  background-color: #007BFF;
+  color: white;
+}
+.content {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* In your CSS file (e.g., style.css) or within a <style> tag in your HTML */
+.ol-scale-bar {
+  /* To shift it upward: Increase the 'bottom' value */
+  bottom: 35px !important; /* Example: Move it 30px from the bottom. Adjust as needed. */
+
+  /* To shift it right: Increase the 'left' value */
+  left: 60px !important; /* Example: Move it 30px from the left. Adjust as needed. */
+
+  /* Using !important helps ensure your custom styles override OpenLayers' default styles. */
+}

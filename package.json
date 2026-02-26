@@ -1,0 +1,39 @@
+{
+  "name": "map-portal",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.1.4"
+  },
+  "dependencies": {
+    "@mapbox/togeojson": "^0.16.2",
+    "@maphubs/tokml": "^0.6.1",
+    "@turf/turf": "^6.5.0",
+    "all": "^0.0.0",
+    "apexcharts": "^4.5.0",
+    "axios": "^1.6.8",
+    "chart.js": "^4.4.8",
+    "config": "^3.3.12",
+    "cookie-parser": "^1.4.6",
+    "fs": "^0.0.1-security",
+    "google-charts": "^2.0.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "jszip": "^3.10.1",
+    "map-portal": "file:",
+    "ol": "latest",
+    "ol-ext": "^4.0.17",
+    "ol-geocoder": "^4.3.3",
+    "ol-layerswitcher": "^4.1.1",
+    "papaparse": "^5.4.1",
+    "pg": "^8.12.0",
+    "plotly.js-dist-min": "^3.0.0",
+    "proj4": "^2.14.0",
+    "shapefile": "^0.6.6",
+    "shpjs": "^6.1.0"
+  }
+}
