@@ -1,15 +1,23 @@
+import TileLayer from 'ol/layer/Tile';
+import TileWMS from 'ol/source/TileWMS';
+
 // Initialize dropdown states
 export let selectedCategoryForDistrictwise = '';
 export let selectedFileForDistrictwise = '';
 export let selectedDistrictForDistrictwise = '';
+export let selectedCircleForDistrictwise = '';
 export let selectedBlocktForDistrictwise = '';
 export let selectedVillagetForDistrictwise = '';
 export let selectedCategoryFieldForDistrictwise = '';
+export let administrative_level = "";
+export let administrative_level_value = "";
+
+let analysisWmsLayer = null;
 
 
 
 export async function withinDistrictFilteronload() {
-    console.log("added.....................");
+  console.log("added.....................");
   const categoryInput = document.getElementById('districtwise-theme');
   const categoryOptions = document.getElementById('districtwise-themeOptions');
   const fileInput = document.getElementById('districtwise-filename');
@@ -23,7 +31,7 @@ export async function withinDistrictFilteronload() {
 
     try {
       const response = await fetch('http://localhost:3010/api/themes');
-          console.log("responseresponse.");
+      console.log("responseresponse.");
 
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const themes = await response.json();
@@ -64,12 +72,12 @@ export async function withinDistrictFilteronload() {
         option.textContent = file;
         fileOptions.appendChild(option);
       });
-            // Rebind event listeners for options
+      // Rebind event listeners for options
       bindOptionListeners(fileOptions, fileInput, (value) => {
         selectedFileForDistrictwise = value;
         // attributefield.innerHTML = '<option value="">-- Select --</option>';
         console.log("selectedFileForDistrictwise");
-                console.log(selectedFileForDistrictwise);
+        console.log(selectedFileForDistrictwise);
         console.log("selectedFileForDistrictwise");
         console.log(selectedCategoryForDistrictwise);
 
@@ -81,7 +89,7 @@ export async function withinDistrictFilteronload() {
     }
   }
 
-    // Toggle dropdown visibility
+  // Toggle dropdown visibility
   function toggleDropdown(input, options) {
     const isVisible = options.style.display === 'block';
     options.style.display = isVisible ? 'none' : 'block';
@@ -89,7 +97,7 @@ export async function withinDistrictFilteronload() {
     console.log('Toggled dropdown:', input.id, 'Visible:', !isVisible); // Debug log
   }
 
-    // Bind click event listeners to dropdown options
+  // Bind click event listeners to dropdown options
   function bindOptionListeners(optionsContainer, input, callback) {
     const options = optionsContainer.querySelectorAll('.dropdown-option');
     options.forEach(option => {
@@ -106,7 +114,7 @@ export async function withinDistrictFilteronload() {
     });
   }
 
-    // Fetch and populate attributes for a file
+  // Fetch and populate attributes for a file
   async function loadAttributes(theme, fileName) {
     try {
       const response = await fetch(`http://localhost:3010/api/attributes/${theme}/${fileName}`);
@@ -126,57 +134,57 @@ export async function withinDistrictFilteronload() {
     }
   }
 
-    // Category dropdown
-    categoryInput.addEventListener('click', () => {
-      toggleDropdown(categoryInput, categoryOptions);
-    });
- 
-    // File dropdown
-    fileInput.addEventListener('click', () => {
-      if (selectedCategoryForDistrictwise) {
-        toggleDropdown(fileInput, fileOptions);
-      } else {
-        console.log('No category selected, file dropdown disabled'); // Debug log
-      }
-    });
+  // Category dropdown
+  categoryInput.addEventListener('click', () => {
+    toggleDropdown(categoryInput, categoryOptions);
+  });
+
+  // File dropdown
+  fileInput.addEventListener('click', () => {
+    if (selectedCategoryForDistrictwise) {
+      toggleDropdown(fileInput, fileOptions);
+    } else {
+      console.log('No category selected, file dropdown disabled'); // Debug log
+    }
+  });
 
 
   // cat input
-    categoryInput.addEventListener('input', () => {
-  const query = categoryInput.value.toLowerCase();
-  const options = categoryOptions.querySelectorAll('.dropdown-option');
+  categoryInput.addEventListener('input', () => {
+    const query = categoryInput.value.toLowerCase();
+    const options = categoryOptions.querySelectorAll('.dropdown-option');
 
-  options.forEach(option => {
-    const matches = option.textContent.toLowerCase().includes(query);
-    option.style.display = matches ? 'block' : 'none';
+    options.forEach(option => {
+      const matches = option.textContent.toLowerCase().includes(query);
+      option.style.display = matches ? 'block' : 'none';
+    });
+
+    categoryOptions.style.display = 'block';
   });
 
-  categoryOptions.style.display = 'block';
-});
-
-// file input
+  // file input
 
 
-    fileInput.addEventListener('input', () => {
-  const query = fileInput.value.toLowerCase();
-  const options = fileOptions.querySelectorAll('.dropdown-option');
+  fileInput.addEventListener('input', () => {
+    const query = fileInput.value.toLowerCase();
+    const options = fileOptions.querySelectorAll('.dropdown-option');
 
-  options.forEach(option => {
-    const matches = option.textContent.toLowerCase().includes(query);
-    option.style.display = matches ? 'block' : 'none';
+    options.forEach(option => {
+      const matches = option.textContent.toLowerCase().includes(query);
+      option.style.display = matches ? 'block' : 'none';
+    });
+
+    fileOptions.style.display = 'block';
   });
-
-  fileOptions.style.display = 'block';
-});
 
 
   // Clear button
-//   clearButton.addEventListener('click', () => {
+  //   clearButton.addEventListener('click', () => {
 
-//     document.getElementById('queryTool-queryInput').value = '';
-//     // document.getElementById('queryTool-zoom').value = '12';
-//     console.log('Form cleared'); // Debug log
-//   });
+  //     document.getElementById('queryTool-queryInput').value = '';
+  //     // document.getElementById('queryTool-zoom').value = '12';
+  //     console.log('Form cleared'); // Debug log
+  //   });
 
   // Initialize categories on load
   console.log('Loading categories...'); // Debug log
@@ -186,7 +194,7 @@ export async function withinDistrictFilteronload() {
 
 
 export async function withinDistrictFilteronload2() {
-    console.log("added.....................");
+  console.log("added.....................");
   const districtInput = document.getElementById('sidebar-filter-district');
   const districtOptions = document.getElementById('sidebar-filter-district-Options');
   const blockInput = document.getElementById('sidebar-filter-block');
@@ -200,7 +208,7 @@ export async function withinDistrictFilteronload2() {
 
     try {
       const response = await fetch('http://localhost:3010/api/getdistricts');
-          console.log("responseresponse.");
+      console.log("responseresponse.");
 
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const Districts = await response.json();
@@ -217,7 +225,7 @@ export async function withinDistrictFilteronload2() {
       bindOptionListeners(districtOptions, districtInput, (value) => {
         // selectedCategoryForDistrictwise = value;
         blockInput.value = '';
-        villageInput.value='';
+        villageInput.value = '';
 
         selectedDistrictForDistrictwise = value;
 
@@ -234,7 +242,7 @@ export async function withinDistrictFilteronload2() {
       const response = await fetch(`http://localhost:3010/api/getdistricts/${dist}`);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const blocks = await response.json();
-      console.log('Fetched blocks for theme', dist, ':', blocks); 
+      console.log('Fetched blocks for theme', dist, ':', blocks);
       blockOptions.innerHTML = '';
       blocks.forEach(block => {
         const option = document.createElement('div');
@@ -245,23 +253,23 @@ export async function withinDistrictFilteronload2() {
       });
       // Rebind event listeners for options
       bindOptionListeners(blockOptions, blockInput, (value) => {
-        villageInput.value='';
-        selectedBlocktForDistrictwise= value;
+        villageInput.value = '';
+        selectedBlocktForDistrictwise = value;
 
-        if (value) loadVillages( value);
+        if (value) loadVillages(value);
       });
     } catch (err) {
       console.error('Error loading files:', err);
     }
   }
 
-    // Fetch and populate files for a category
+  // Fetch and populate files for a category
   async function loadVillages(block) {
     try {
       const response = await fetch(`http://localhost:3010/api/getdistricts/${selectedDistrictForDistrictwise}/${block}`);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const villages = await response.json();
-      console.log('Fetched blocks for theme', block, ':', villages); 
+      console.log('Fetched blocks for theme', block, ':', villages);
       villageOptions.innerHTML = '';
       villages.forEach(village => {
         const option = document.createElement('div');
@@ -286,7 +294,7 @@ export async function withinDistrictFilteronload2() {
     }
   }
 
-    // Toggle dropdown visibility
+  // Toggle dropdown visibility
   function toggleDropdown(input, options) {
     const isVisible = options.style.display === 'block';
     options.style.display = isVisible ? 'none' : 'block';
@@ -294,7 +302,7 @@ export async function withinDistrictFilteronload2() {
     console.log('Toggled dropdown:', input.id, 'Visible:', !isVisible); // Debug log
   }
 
-    // Bind click event listeners to dropdown options
+  // Bind click event listeners to dropdown options
   function bindOptionListeners(optionsContainer, input, callback) {
     const options = optionsContainer.querySelectorAll('.dropdown-option');
     options.forEach(option => {
@@ -312,85 +320,85 @@ export async function withinDistrictFilteronload2() {
   }
 
 
-    // Category dropdown
-    districtInput.addEventListener('click', () => {
-      selectedBlocktForDistrictwise = '';
-selectedVillagetForDistrictwise = '';
-      toggleDropdown(districtInput, districtOptions);
-    });
- 
-    // File dropdown
-    blockInput.addEventListener('click', () => {
-selectedVillagetForDistrictwise = '';
-      if (selectedDistrictForDistrictwise) {
-        toggleDropdown(blockInput, blockOptions);
-      } else {
-        console.log('No category selected, file dropdown disabled'); // Debug log
-      }
-    });
+  // Category dropdown
+  districtInput.addEventListener('click', () => {
+    selectedBlocktForDistrictwise = '';
+    selectedVillagetForDistrictwise = '';
+    toggleDropdown(districtInput, districtOptions);
+  });
 
-        // village dropdown
-    villageInput.addEventListener('click', () => {
-      if (selectedBlocktForDistrictwise) {
-        toggleDropdown(villageInput, villageOptions);
-      } else {
-        console.log('No category selected, file dropdown disabled'); // Debug log
-      }
-    });
+  // File dropdown
+  blockInput.addEventListener('click', () => {
+    selectedVillagetForDistrictwise = '';
+    if (selectedDistrictForDistrictwise) {
+      toggleDropdown(blockInput, blockOptions);
+    } else {
+      console.log('No category selected, file dropdown disabled'); // Debug log
+    }
+  });
+
+  // village dropdown
+  villageInput.addEventListener('click', () => {
+    if (selectedBlocktForDistrictwise) {
+      toggleDropdown(villageInput, villageOptions);
+    } else {
+      console.log('No category selected, file dropdown disabled'); // Debug log
+    }
+  });
 
 
   // cat input
-    districtInput.addEventListener('input', () => {
-  const query = districtInput.value.toLowerCase();
-  const options = districtOptions.querySelectorAll('.dropdown-option');
+  districtInput.addEventListener('input', () => {
+    const query = districtInput.value.toLowerCase();
+    const options = districtOptions.querySelectorAll('.dropdown-option');
 
-  options.forEach(option => {
-    const matches = option.textContent.toLowerCase().includes(query);
-    option.style.display = matches ? 'block' : 'none';
+    options.forEach(option => {
+      const matches = option.textContent.toLowerCase().includes(query);
+      option.style.display = matches ? 'block' : 'none';
+    });
+
+    districtOptions.style.display = 'block';
   });
 
-  districtOptions.style.display = 'block';
-});
-
-// file input
+  // file input
 
 
-    blockInput.addEventListener('input', () => {
-  const query = blockInput.value.toLowerCase();
-  const options = blockOptions.querySelectorAll('.dropdown-option');
+  blockInput.addEventListener('input', () => {
+    const query = blockInput.value.toLowerCase();
+    const options = blockOptions.querySelectorAll('.dropdown-option');
 
-  options.forEach(option => {
-    const matches = option.textContent.toLowerCase().includes(query);
-    option.style.display = matches ? 'block' : 'none';
+    options.forEach(option => {
+      const matches = option.textContent.toLowerCase().includes(query);
+      option.style.display = matches ? 'block' : 'none';
+    });
+
+    blockOptions.style.display = 'block';
   });
 
-  blockOptions.style.display = 'block';
-});
 
+  // village
 
-// village
+  villageInput.addEventListener('input', () => {
+    const query = villageInput.value.toLowerCase();
+    const options = villageOptions.querySelectorAll('.dropdown-option');
 
-    villageInput.addEventListener('input', () => {
-  const query = villageInput.value.toLowerCase();
-  const options = villageOptions.querySelectorAll('.dropdown-option');
+    options.forEach(option => {
+      const matches = option.textContent.toLowerCase().includes(query);
+      option.style.display = matches ? 'block' : 'none';
+    });
 
-  options.forEach(option => {
-    const matches = option.textContent.toLowerCase().includes(query);
-    option.style.display = matches ? 'block' : 'none';
+    villageOptions.style.display = 'block';
   });
-
-  villageOptions.style.display = 'block';
-});
 
 
 
   // Clear button
-//   clearButton.addEventListener('click', () => {
+  //   clearButton.addEventListener('click', () => {
 
-//     document.getElementById('queryTool-queryInput').value = '';
-//     // document.getElementById('queryTool-zoom').value = '12';
-//     console.log('Form cleared'); // Debug log
-//   });
+  //     document.getElementById('queryTool-queryInput').value = '';
+  //     // document.getElementById('queryTool-zoom').value = '12';
+  //     console.log('Form cleared'); // Debug log
+  //   });
 
   // Initialize categories on load
   console.log('Loading categories...'); // Debug log
@@ -405,7 +413,7 @@ export function displayBoundaryLevelResults(result, map) {
   const resultsTable = document.getElementById('buffer-table');
 
   resultsDiv.style.display = 'block';
-    resultsTable.style.display = 'block';
+  resultsTable.style.display = 'block';
 
   resultsChartDiv.style.display = 'none';
 
@@ -460,7 +468,7 @@ export function displayBoundaryLevelResults(result, map) {
     htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer Query:</strong> ${buffermessage}</p>`;
 
   } else if (result.geometryType === 'LineString' || result.geometryType === 'MultiLineString') {
-            const buffermessage = result.buffermessage ? result.buffermessage : '';
+    const buffermessage = result.buffermessage ? result.buffermessage : '';
 
     htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer Query:</strong> ${buffermessage}</p>`;
     htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Covered Length:</strong> ${result.totalLength ? result.totalLength.toFixed(2) : 0} meters</p>`;
@@ -470,11 +478,11 @@ export function displayBoundaryLevelResults(result, map) {
   } else if (result.geometryType === 'Polygon' || result.geometryType === 'MultiPolygon') {
     const totalArea = result.totalArea ? result.totalArea.toFixed(2) : 0;
     const bufferArea = result.bufferArea ? result.bufferArea.toFixed(2) : 0;
-        const buffermessage = result.buffermessage ? result.buffermessage : '';
+    const buffermessage = result.buffermessage ? result.buffermessage : '';
 
     const percentage = result.percentageCovered || 0;
-        htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer Query:</strong> ${buffermessage}</p>`;
-        htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer area &nbsp;&nbsp; :</strong>${bufferArea} sq meters</p>`;
+    htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer Query:</strong> ${buffermessage}</p>`;
+    htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer area &nbsp;&nbsp; :</strong>${bufferArea} sq meters</p>`;
     htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Covered Area:</strong>${totalArea} sq meters</p>`;
     htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Percentage covered:</strong> ${percentage}%</p>`;
     if (result.categoryAreas && Object.keys(result.categoryAreas).length > 0) {
@@ -579,46 +587,91 @@ export function displayBoundaryLevelResults(result, map) {
   }
 }
 
-export  async function performBoundaryLevelBufferAnalysis( map) {
-    if (!selectedCategoryForDistrictwise || !selectedFileForDistrictwise) {
-      alert("Please select a theme and layer.");
-      return;
-    }
-
-    if (!selectedDistrictForDistrictwise ) {
-      alert("Please select a atleast District.");
-      return;
-    }
-
-    try {
-      selectedCategoryFieldForDistrictwise = document.getElementById("sidebar-filter-attribute").value;
-
-      const response = await fetch('http://localhost:3010/api/within-admin-bound', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          theme: selectedCategoryForDistrictwise,
-          table: selectedFileForDistrictwise,
-          district: selectedDistrictForDistrictwise,
-          block: selectedBlocktForDistrictwise,
-          village: selectedVillagetForDistrictwise,
-          category:selectedCategoryFieldForDistrictwise
-        })
-      });
-
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const result = await response.json();
-      console.log('Buffer analysis result:', result);
-      displayBoundaryLevelResults(result, map);
-    } catch (err) {
-      console.error('Error performing buffer analysis:', err);
-
-  const resultsChartDiv = document.getElementById('buffer-chartdiv');
-  const resultsTable = document.getElementById('buffer-table');
-
-  resultsChartDiv.style.display = 'none';
-  resultsTable.style.display = 'none';
-
-      document.getElementById('buffer-head').innerHTML = 'Error performing buffer analysis.';
-    }
+export async function performBoundaryLevelBufferAnalysis(map) {
+  if (!selectedCategoryForDistrictwise || !selectedFileForDistrictwise) {
+    alert("Please select a theme and layer.");
+    return;
   }
+
+  if (!selectedDistrictForDistrictwise) {
+    alert("Please select a atleast District.");
+    return;
+  }
+
+  try {
+    selectedCategoryFieldForDistrictwise = document.getElementById("sidebar-filter-attribute").value;
+
+    const response = await fetch('http://localhost:3010/api/within-admin-bound', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        theme: selectedCategoryForDistrictwise,
+        table: selectedFileForDistrictwise,
+        district: selectedDistrictForDistrictwise,
+        block: selectedBlocktForDistrictwise,
+        village: selectedVillagetForDistrictwise,
+        category: selectedCategoryFieldForDistrictwise
+      })
+    });
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    const result = await response.json();
+    console.log('Buffer analysis result:', result);
+
+    // Remove existing layer
+    if (analysisWmsLayer) {
+      map.removeLayer(analysisWmsLayer);
+    }
+
+    // Get map extent for BBOX
+    const extent = map.getView().calculateExtent(map.getSize());
+
+    if (selectedVillagetForDistrictwise) {
+      administrative_level = "village"
+      administrative_level_value = selectedVillagetForDistrictwise
+
+    }
+    else if (selectedBlocktForDistrictwise) {
+      administrative_level = "block"
+      administrative_level_value = selectedBlocktForDistrictwise
+    }
+    else if (selectedCircleForDistrictwise) {
+      administrative_level = "circle"
+      administrative_level_value = selectedCircleForDistrictwise
+    }
+    else if (selectedDistrictForDistrictwise) {
+      administrative_level = "district"
+      administrative_level_value = selectedDistrictForDistrictwise
+    }
+
+    analysisWmsLayer = new TileLayer({
+      source: new TileWMS({
+        url: "http://localhost:3010/api/clip-wms",
+        crossOrigin: "anonymous",   // IMPORTANT
+
+        params: {
+          LAYERS: selectedFileForDistrictwise,
+          boundaryLevel: administrative_level,
+          boundaryId: administrative_level_value
+        },
+        serverType: "geoserver"
+      })
+    });
+
+
+    // Add layer to map
+    map.addLayer(analysisWmsLayer);
+
+    displayBoundaryLevelResults(result, map);
+  } catch (err) {
+    console.error('Error performing buffer analysis:', err);
+
+    const resultsChartDiv = document.getElementById('buffer-chartdiv');
+    const resultsTable = document.getElementById('buffer-table');
+
+    resultsChartDiv.style.display = 'none';
+    resultsTable.style.display = 'none';
+
+    document.getElementById('buffer-head').innerHTML = 'Error performing buffer analysis.';
+  }
+}
