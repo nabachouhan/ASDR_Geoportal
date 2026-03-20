@@ -1,5 +1,4 @@
-@import "node_modules/ol/ol.css";
-
+@import "ol/ol.css";
 html,
 
 *{
@@ -32,6 +31,13 @@ body {
   top: 30px;
   bottom: 30px;
   width: 100%;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.ol-layer canvas {
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 

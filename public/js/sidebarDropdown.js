@@ -577,12 +577,15 @@ export function displayBoundaryLevelResults(result, map) {
       })
     );
     features.forEach(feature => {
-      feature.setStyle(new Style({
-        fill: new Fill({ color: 'rgba(0, 255, 0, 0.2)' }),
-        stroke: new Stroke({ color: '#00FF00', width: 2 }),
-        zIndex: 8
-      }));
-      bufferLayer.getSource().addFeature(feature);
+      // Safely apply features to a global bufferLayer if it exists, otherwise avoid crashing
+      if (window.bufferLayer && window.Style && window.Fill && window.Stroke) {
+        feature.setStyle(new window.Style({
+          fill: new window.Fill({ color: 'rgba(0, 255, 0, 0.2)' }),
+          stroke: new window.Stroke({ color: '#00FF00', width: 2 }),
+          zIndex: 8
+        }));
+        window.bufferLayer.getSource().addFeature(feature);
+      }
     });
   }
 }
@@ -655,7 +658,8 @@ export async function performBoundaryLevelBufferAnalysis(map) {
           boundaryId: administrative_level_value
         },
         serverType: "geoserver"
-      })
+      }),
+      preload: Infinity
     });
 
 

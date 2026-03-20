@@ -825,18 +825,50 @@ canvas {
 }
 
 #legend {
-    padding: 7px 15px;
+    padding: 0;
     width: 240px;
     position: absolute;
     bottom: 48px;
     right: 3px;
-    max-height: 200px;
-    overflow: auto;
+    /* height is driven purely by content — no min-height, no blank space */
+    height: fit-content;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
     z-index: 9;
     background-color: #fff;
     border-radius: 6px;
-
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
 }
+
+/* Hide legend box when it has no layer items */
+#legend:not(:has(.legend-item)) {
+    display: none !important;
+}
+
+/* Clickable legend image */
+#legend img {
+    cursor: pointer;
+    flex-shrink: 0;
+    border: 1px solid #ccc;
+    background-color: white;
+    display: block;
+}
+
+/* Each legend row: top-align so label always starts at same position regardless of image height */
+#legend .legend-item {
+    align-items: flex-start !important;
+    padding-top: 3px;
+}
+
+/* Fix-width slot for the image keeps label column always at same X position */
+#legend .legend-item img {
+    width: 32px !important;
+    height: auto !important;
+    min-height: 16px;
+    object-fit: contain;
+}
+
 
 #scale-line-control {
     width: 270px;
@@ -1097,15 +1129,15 @@ canvas {
 }
 
 /* sidebar within filter */
-.sidebar-dropdown-options{
-position: relative;
-top: 0%;
-left: 0;
-width: 100%;
-border: 1px solid #ccc;
-background-color: #fff;
-z-index: 10;
-max-height: 150px;
-overflow-y: auto;
-display: none;
+.sidebar-dropdown-options {
+    position: relative;
+    top: 0%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 10;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
 }

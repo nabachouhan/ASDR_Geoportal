@@ -6,7 +6,7 @@ import OSM from "ol/source/OSM";
 import { Projection, fromLonLat } from "ol/proj";
 
 import { Vector as VectorSource } from "ol/source.js";
-import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer.js";
+import { Tile as TileLayer, Vector as VectorLayer, VectorImage as VectorImageLayer } from "ol/layer.js";
 import { get as getProjection, getPointResolution } from "ol/proj.js";
 
 import XYZ from "ol/source/XYZ.js";
@@ -23,6 +23,7 @@ export const osm = new TileLayer({
   title: "osm",
   name: "osm",
   isBase: true,
+  preload: Infinity,
 });
 
 export const labelLayer = new TileLayer({
@@ -34,6 +35,7 @@ export const labelLayer = new TileLayer({
   visible: false,
   name: "labelLayer",
   isBase: true,
+  preload: Infinity,
 });
 
 export const standardLayer = new TileLayer({
@@ -46,6 +48,7 @@ export const standardLayer = new TileLayer({
   visible: false,
   name: "standardLayer",
   isBase: true,
+  preload: Infinity,
 });
 
 export const satelliteLayer = new TileLayer({
@@ -59,6 +62,7 @@ export const satelliteLayer = new TileLayer({
   name: "satelliteLayer",
   maxZoom: 23, // Example maximum zoom level
   isBase: true,
+  preload: Infinity,
 });
 
 export const hybridLayer = new TileLayer({
@@ -72,6 +76,7 @@ export const hybridLayer = new TileLayer({
   name: "hybridLayer",
   maxZoom: 23, // Example maximum zoom level
   isBase: true,
+  preload: Infinity,
 });
 
 export const transportLayer = new TileLayer({
@@ -84,6 +89,7 @@ export const transportLayer = new TileLayer({
   visible: false,
   name: "transportLayer",
   isBase: true,
+  preload: Infinity,
 });
 
 export const osmHot = new TileLayer({
@@ -97,6 +103,7 @@ export const osmHot = new TileLayer({
   name: "osmHot",
   visible: false,
   isBase: true,
+  preload: Infinity,
 });
 
 export const cartoLight = new TileLayer({
@@ -110,6 +117,7 @@ export const cartoLight = new TileLayer({
   name: "cartoLight",
   visible: false,
   isBase: true,
+  preload: Infinity,
 });
 
 export const cartoDark = new TileLayer({
@@ -123,6 +131,7 @@ export const cartoDark = new TileLayer({
   name: "cartoDark",
   visible: false,
   isBase: true,
+  preload: Infinity,
 });
 
 export const cartoVoyager = new TileLayer({
@@ -136,6 +145,7 @@ export const cartoVoyager = new TileLayer({
   name: "cartoVoyager",
   visible: false,
   isBase: true,
+  preload: Infinity,
 });
 
 export const openTopo = new TileLayer({
@@ -149,6 +159,7 @@ export const openTopo = new TileLayer({
   name: "openTopo",
   visible: false,
   isBase: true,
+  preload: Infinity,
 });
 
 
@@ -163,9 +174,10 @@ export const googleSatelliteLayer = new TileLayer({
   visible: false,
   name: "googleSatelliteLayer",
   isBase: true,
+  preload: Infinity,
 });
 
-const assambound = new VectorLayer({
+const assambound = new VectorImageLayer({
   source: new VectorSource({
     url: "../json/assam_state_bound.geojson",
     format: new GeoJSON(),

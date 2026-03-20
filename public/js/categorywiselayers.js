@@ -100,6 +100,7 @@ function addLayerToMap(layer, map) {
       serverType: 'geoserver',
     }),
     visible: true,
+    preload: Infinity,
     properties: {
       name: layer.file_name,
       title: layer.title || layer.file_name,
