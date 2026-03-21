@@ -194,216 +194,210 @@ export async function withinDistrictFilteronload() {
 
 
 export async function withinDistrictFilteronload2() {
-  console.log("added.....................");
-  const districtInput = document.getElementById('sidebar-filter-district');
+  console.log("withinDistrictFilteronload2 - initialising hierarchy...");
+
+  const districtInput  = document.getElementById('sidebar-filter-district');
   const districtOptions = document.getElementById('sidebar-filter-district-Options');
-  const blockInput = document.getElementById('sidebar-filter-block');
-  const blockOptions = document.getElementById("sidebar-filter-block-Options");
-  const villageInput = document.getElementById("sidebar-filter-village");
-  const villageOptions = document.getElementById("sidebar-filter-village-Options");
+  const circleInput   = document.getElementById('sidebar-filter-circle');
+  const circleOptions  = document.getElementById('sidebar-filter-circle-Options');
+  const blockInput    = document.getElementById('sidebar-filter-block');
+  const blockOptions   = document.getElementById('sidebar-filter-block-Options');
+  const villageInput  = document.getElementById('sidebar-filter-village');
+  const villageOptions = document.getElementById('sidebar-filter-village-Options');
 
-  // Fetch and populate categories
-  async function loadDistrict() {
-    console.log("loadCategoriesForDistrictwise.");
-
-    try {
-      const response = await fetch('http://localhost:3010/api/getdistricts');
-      console.log("responseresponse.");
-
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const Districts = await response.json();
-      // console.log('Fetched themes:', themes); // Debug log
-      districtOptions.innerHTML = '<div class="dropdown-option" data-value="">Select...</div>';
-      Districts.forEach(district => {
-        const option = document.createElement('div');
-        option.className = 'dropdown-option';
-        option.dataset.value = district;
-        option.textContent = district;
-        districtOptions.appendChild(option);
-      });
-      // Rebind event listeners for options
-      bindOptionListeners(districtOptions, districtInput, (value) => {
-        // selectedCategoryForDistrictwise = value;
-        blockInput.value = '';
-        villageInput.value = '';
-
-        selectedDistrictForDistrictwise = value;
-
-        if (value) loadBlocks(value);
-      });
-    } catch (err) {
-      console.error('Error loading categories:', err);
-    }
-  }
-
-  // Fetch and populate files for a category
-  async function loadBlocks(dist) {
-    try {
-      const response = await fetch(`http://localhost:3010/api/getdistricts/${dist}`);
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const blocks = await response.json();
-      console.log('Fetched blocks for theme', dist, ':', blocks);
-      blockOptions.innerHTML = '';
-      blocks.forEach(block => {
-        const option = document.createElement('div');
-        option.className = 'dropdown-option';
-        option.dataset.value = block;
-        option.textContent = block;
-        blockOptions.appendChild(option);
-      });
-      // Rebind event listeners for options
-      bindOptionListeners(blockOptions, blockInput, (value) => {
-        villageInput.value = '';
-        selectedBlocktForDistrictwise = value;
-
-        if (value) loadVillages(value);
-      });
-    } catch (err) {
-      console.error('Error loading files:', err);
-    }
-  }
-
-  // Fetch and populate files for a category
-  async function loadVillages(block) {
-    try {
-      const response = await fetch(`http://localhost:3010/api/getdistricts/${selectedDistrictForDistrictwise}/${block}`);
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const villages = await response.json();
-      console.log('Fetched blocks for theme', block, ':', villages);
-      villageOptions.innerHTML = '';
-      villages.forEach(village => {
-        const option = document.createElement('div');
-        option.className = 'dropdown-option';
-        option.dataset.value = village;
-        option.textContent = village;
-        villageOptions.appendChild(option);
-      });
-      // Rebind event listeners for options
-      bindOptionListeners(villageOptions, villageInput, (value) => {
-        selectedVillagetForDistrictwise = value;
-        // attributefield.innerHTML = '<option value="">-- Select --</option>';
-        console.log("selectedFileForDistrictwise");
-        console.log(selectedFileForDistrictwise);
-        console.log("selectedFileForDistrictwise");
-        console.log(selectedCategoryForDistrictwise);
-
-        if (value && selectedCategoryForDistrictwise) loadAttributes(selectedCategoryForDistrictwise, value);
-      });
-    } catch (err) {
-      console.error('Error loading files:', err);
-    }
-  }
-
-  // Toggle dropdown visibility
+  // ── helpers ──────────────────────────────────────────────────────────────
   function toggleDropdown(input, options) {
     const isVisible = options.style.display === 'block';
     options.style.display = isVisible ? 'none' : 'block';
-    input.readOnly = isVisible; // Allow typing only when dropdown is open
-    console.log('Toggled dropdown:', input.id, 'Visible:', !isVisible); // Debug log
+    input.readOnly = isVisible;
   }
 
-  // Bind click event listeners to dropdown options
+  function clearDropdown(input, optionsEl) {
+    input.value = '';
+    optionsEl.innerHTML = '';
+    optionsEl.style.display = 'none';
+  }
+
   function bindOptionListeners(optionsContainer, input, callback) {
     const options = optionsContainer.querySelectorAll('.dropdown-option');
     options.forEach(option => {
-      // Remove existing listeners to prevent duplicates
       option.removeEventListener('click', option.clickHandler);
       option.clickHandler = () => {
         input.value = option.textContent;
         optionsContainer.style.display = 'none';
         input.readOnly = true;
-        console.log('Selected option:', option.textContent, 'Value:', option.dataset.value); // Debug log
         callback(option.dataset.value);
       };
       option.addEventListener('click', option.clickHandler);
     });
   }
 
+  function bindSearchFilter(input, optionsEl) {
+    input.addEventListener('input', () => {
+      const query = input.value.toLowerCase();
+      optionsEl.querySelectorAll('.dropdown-option').forEach(opt => {
+        opt.style.display = opt.textContent.toLowerCase().includes(query) ? 'block' : 'none';
+      });
+      optionsEl.style.display = 'block';
+    });
+  }
 
-  // Category dropdown
-  districtInput.addEventListener('click', () => {
-    selectedBlocktForDistrictwise = '';
-    selectedVillagetForDistrictwise = '';
-    toggleDropdown(districtInput, districtOptions);
+  function populateDropdown(optionsEl, input, items, callback) {
+    optionsEl.innerHTML = '';
+    items.forEach(item => {
+      const opt = document.createElement('div');
+      opt.className = 'dropdown-option';
+      opt.dataset.value = item;
+      opt.textContent = item;
+      optionsEl.appendChild(opt);
+    });
+    bindOptionListeners(optionsEl, input, callback);
+  }
+
+  // ── API loaders ──────────────────────────────────────────────────────────
+
+  async function loadDistrict() {
+    try {
+      const res = await fetch('http://localhost:3010/api/getdistricts');
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      const districts = await res.json();
+      populateDropdown(districtOptions, districtInput, districts, (value) => {
+        // Reset all downstream levels
+        selectedDistrictForDistrictwise = value;
+        selectedCircleForDistrictwise   = '';
+        selectedBlocktForDistrictwise   = '';
+        selectedVillagetForDistrictwise  = '';
+        clearDropdown(circleInput, circleOptions);
+        clearDropdown(blockInput, blockOptions);
+        clearDropdown(villageInput, villageOptions);
+
+        if (value) {
+          // Load circles and blocks simultaneously on district select
+          loadCircles(value);
+          loadBlocks(value);
+        }
+      });
+    } catch (err) {
+      console.error('Error loading districts:', err);
+    }
+  }
+
+  async function loadCircles(district) {
+    try {
+      const res = await fetch(`http://localhost:3010/api/getCircles/${district}`);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      const circles = await res.json();
+      populateDropdown(circleOptions, circleInput, circles, (value) => {
+        selectedCircleForDistrictwise   = value;
+        selectedBlocktForDistrictwise   = '';
+        selectedVillagetForDistrictwise  = '';
+        clearDropdown(villageInput, villageOptions);
+
+        // Circle selected → load villages scoped to this circle
+        if (value) loadVillagesByCircle(value);
+      });
+    } catch (err) {
+      console.error('Error loading circles:', err);
+    }
+  }
+
+  async function loadBlocks(district) {
+    try {
+      const res = await fetch(`http://localhost:3010/api/getblocks/${district}`);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      const blocks = await res.json();
+      populateDropdown(blockOptions, blockInput, blocks, (value) => {
+        selectedBlocktForDistrictwise   = value;
+        selectedVillagetForDistrictwise  = '';
+        clearDropdown(villageInput, villageOptions);
+
+        if (value) {
+          // If a circle is already selected, load villages scoped to that circle
+          // Otherwise load villages by district + block
+          if (selectedCircleForDistrictwise) {
+            loadVillagesByCircle(selectedCircleForDistrictwise);
+          } else {
+            loadVillagesByBlock(selectedDistrictForDistrictwise, value);
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Error loading blocks:', err);
+    }
+  }
+
+  // Villages filtered by circle (API: getvillages/:district/:circle)
+  async function loadVillagesByCircle(circle) {
+    try {
+      const res = await fetch(`http://localhost:3010/api/getvillages/${selectedDistrictForDistrictwise}/${circle}`);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      const villages = await res.json();
+      populateDropdown(villageOptions, villageInput, villages, (value) => {
+        selectedVillagetForDistrictwise = value;
+      });
+    } catch (err) {
+      console.error('Error loading villages by circle:', err);
+    }
+  }
+
+  // Villages filtered by district + block (fallback when no circle chosen)
+  async function loadVillagesByBlock(district, block) {
+    try {
+      const res = await fetch(`http://localhost:3010/api/getvillages/${district}/${block}`);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      const villages = await res.json();
+      populateDropdown(villageOptions, villageInput, villages, (value) => {
+        selectedVillagetForDistrictwise = value;
+      });
+    } catch (err) {
+      console.error('Error loading villages by block:', err);
+    }
+  }
+
+  // ── click-to-open handlers ────────────────────────────────────────────────
+
+  districtInput.addEventListener('click', () => toggleDropdown(districtInput, districtOptions));
+
+  circleInput.addEventListener('click', () => {
+    if (selectedDistrictForDistrictwise) toggleDropdown(circleInput, circleOptions);
   });
 
-  // File dropdown
   blockInput.addEventListener('click', () => {
-    selectedVillagetForDistrictwise = '';
-    if (selectedDistrictForDistrictwise) {
-      toggleDropdown(blockInput, blockOptions);
-    } else {
-      console.log('No category selected, file dropdown disabled'); // Debug log
-    }
+    if (selectedDistrictForDistrictwise) toggleDropdown(blockInput, blockOptions);
   });
 
-  // village dropdown
   villageInput.addEventListener('click', () => {
-    if (selectedBlocktForDistrictwise) {
+    if (selectedCircleForDistrictwise || selectedBlocktForDistrictwise) {
       toggleDropdown(villageInput, villageOptions);
-    } else {
-      console.log('No category selected, file dropdown disabled'); // Debug log
     }
   });
 
+  // ── search/filter listeners ───────────────────────────────────────────────
+  bindSearchFilter(districtInput, districtOptions);
+  bindSearchFilter(circleInput, circleOptions);
+  bindSearchFilter(blockInput, blockOptions);
+  bindSearchFilter(villageInput, villageOptions);
 
-  // cat input
-  districtInput.addEventListener('input', () => {
-    const query = districtInput.value.toLowerCase();
-    const options = districtOptions.querySelectorAll('.dropdown-option');
-
-    options.forEach(option => {
-      const matches = option.textContent.toLowerCase().includes(query);
-      option.style.display = matches ? 'block' : 'none';
+  // ── clear button ─────────────────────────────────────────────────────────
+  const clearBtn = document.getElementById('clearBoundaryLevelBufferFilter');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      selectedDistrictForDistrictwise  = '';
+      selectedCircleForDistrictwise    = '';
+      selectedBlocktForDistrictwise    = '';
+      selectedVillagetForDistrictwise   = '';
+      clearDropdown(districtInput, districtOptions);
+      clearDropdown(circleInput, circleOptions);
+      clearDropdown(blockInput, blockOptions);
+      clearDropdown(villageInput, villageOptions);
     });
+  }
 
-    districtOptions.style.display = 'block';
-  });
-
-  // file input
-
-
-  blockInput.addEventListener('input', () => {
-    const query = blockInput.value.toLowerCase();
-    const options = blockOptions.querySelectorAll('.dropdown-option');
-
-    options.forEach(option => {
-      const matches = option.textContent.toLowerCase().includes(query);
-      option.style.display = matches ? 'block' : 'none';
-    });
-
-    blockOptions.style.display = 'block';
-  });
-
-
-  // village
-
-  villageInput.addEventListener('input', () => {
-    const query = villageInput.value.toLowerCase();
-    const options = villageOptions.querySelectorAll('.dropdown-option');
-
-    options.forEach(option => {
-      const matches = option.textContent.toLowerCase().includes(query);
-      option.style.display = matches ? 'block' : 'none';
-    });
-
-    villageOptions.style.display = 'block';
-  });
-
-
-
-  // Clear button
-  //   clearButton.addEventListener('click', () => {
-
-  //     document.getElementById('queryTool-queryInput').value = '';
-  //     // document.getElementById('queryTool-zoom').value = '12';
-  //     console.log('Form cleared'); // Debug log
-  //   });
-
-  // Initialize categories on load
-  console.log('Loading categories...'); // Debug log
+  // ── bootstrap ─────────────────────────────────────────────────────────────
+  console.log('Loading districts...');
   await loadDistrict();
 }
+
 
 export function displayBoundaryLevelResults(result, map) {
   const resultsDiv = document.getElementById('buffer-results');
@@ -611,6 +605,7 @@ export async function performBoundaryLevelBufferAnalysis(map) {
         theme: selectedCategoryForDistrictwise,
         table: selectedFileForDistrictwise,
         district: selectedDistrictForDistrictwise,
+        circle: selectedCircleForDistrictwise,
         block: selectedBlocktForDistrictwise,
         village: selectedVillagetForDistrictwise,
         category: selectedCategoryFieldForDistrictwise
@@ -655,7 +650,8 @@ export async function performBoundaryLevelBufferAnalysis(map) {
         params: {
           LAYERS: selectedFileForDistrictwise,
           boundaryLevel: administrative_level,
-          boundaryId: administrative_level_value
+          boundaryId: administrative_level_value,
+          inputmode: 'reference'
         },
         serverType: "geoserver"
       }),

@@ -65,7 +65,7 @@
 
         <ul class="side_menu_cat1">
           <div class="side_menu_container_optins">
-            <li id="sidebar-datasets-toggle-btn">Datasets</li>
+            <li id="sidebar-datasets-toggle-btn">All Datasets</li>
             <ul class="side_menu_optin_block side_menu_cat2" id="sidebar-datasets">
               <li id="sidebar-datasets-administrative-btn">Administrative</li>
               <ul class="side_menu_optin_block side_menu_cat3" id="sidebar-datasets-administrative"></ul>
@@ -117,7 +117,8 @@
                 </select>
 
                 <label for="buffer-radius">Enter Radius in [m]:</label>
-                <input type="number" id="buffer-radius" name="buffer-radius" placeholder="Enter Radius in meter" value="100" min="0">
+                <input type="number" id="buffer-radius" name="buffer-radius" placeholder="Enter Radius in meter"
+                  value="100" min="0">
               </form>
               <button id="createBuffer">Create</button>
               <button id="clearBuffer">Clear</button>
@@ -130,7 +131,7 @@
           <!-- dist -->
           <!-- dist -->
           <div class="side_menu_container_optins">
-            <li id="sidebar-districtwise-btn">District Level Analysis</li>
+            <li id="sidebar-districtwise-btn">Boundary Level Analysis</li>
             <div class="side_menu_cat2" id="districtwise_search">
               <!-- <form id="districtwiseForm"> -->
               <label for="districtwise-theme">Select Theme:</label>
@@ -163,14 +164,20 @@
               <div class="sidebar-dropdown-options" id="sidebar-filter-district-Options">
               </div>
 
+              <label for="sidebar-filter-circle">Select Circle:</label>
+              <input type="text" id="sidebar-filter-circle" class="dropdown-input" placeholder="Select circle..."
+                readonly />
+              <div class="sidebar-dropdown-options" id="sidebar-filter-circle-Options">
+              </div>
+
               <label for="sidebar-filter-block">Select Block:</label>
-              <input type="text" id="sidebar-filter-block" class="dropdown-input" placeholder="Select category..."
+              <input type="text" id="sidebar-filter-block" class="dropdown-input" placeholder="Select block..."
                 readonly />
               <div class="sidebar-dropdown-options" id="sidebar-filter-block-Options">
               </div>
 
               <label for="sidebar-filter-village">Select Village:</label>
-              <input type="text" id="sidebar-filter-village" class="dropdown-input" placeholder="Select category..."
+              <input type="text" id="sidebar-filter-village" class="dropdown-input" placeholder="Select village..."
                 readonly />
               <div class="sidebar-dropdown-options" id="sidebar-filter-village-Options">
               </div>
@@ -195,11 +202,19 @@
           </div>
 
           <div class="side_menu_container_optins">
-            <li id="sidebar-geojson2kml-btn">Convert GeoJSON To KML</li>
-            <div class="side_menu_cat2" id="geojson2kml">
-              <label for="fileInput">Choose <span style="color: red; font-size: .8em;"> .GeoJSON </span> </label>
-              <input type="file" id="geojson2kmlFileInput" accept=".Geojson,">
-              <button id="geojson2kmlDownload">Convert</button>
+            <li id="sidebar-universalconverter-btn">Universal Format Converter</li>
+            <div class="side_menu_cat2" id="universalconverter" style="display: none;">
+              <label for="converterFileInput">Input File <span style="color: red; font-size: .8em;"> .GeoJSON, .kml, .zip</span></label>
+              <input type="file" id="converterFileInput" accept=".geojson,.json,.kml,.zip">
+              
+              <label for="converterOutputFormat" style="display: block; margin-top: 10px;">Output Format:</label>
+              <select id="converterOutputFormat" style="width: 100%; margin-bottom: 10px; padding: 4px;">
+                <option value="geojson">GeoJSON (.geojson)</option>
+                <option value="kml">KML (.kml)</option>
+                <option value="shapefile">Shapefile (.zip)</option>
+              </select>
+              
+              <button id="converterDownloadBtn">Convert & Download</button>
             </div>
           </div>
 

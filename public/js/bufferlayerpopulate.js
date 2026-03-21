@@ -8,6 +8,8 @@ import { transform } from 'ol/proj';
 import { WKT } from 'ol/format';
 import * as turf from '@turf/turf';
 import GeoJSON from 'ol/format/GeoJSON';
+import TileLayer from 'ol/layer/Tile';
+import TileWMS from 'ol/source/TileWMS';
 
 export let bufferselectedCategory = '';
 export let bufferselectedFile = '';
@@ -24,6 +26,8 @@ export let bufferSource = '';
 let currentDrawInteraction = null;
 let bufferLayer = null;
 let drawSource = null;  // Separate source for drawing preview (prevents flickering)
+let bufferAnalysisWmsLayer = null;
+export let bufferwkt = '';
 
 export async function bufferoptionload(map) {
   const buffercategoryOptions = document.getElementById('bufferlayer-theme');
@@ -373,6 +377,10 @@ export function initBufferDrawing(map) {
     document.getElementById('buffer-head').innerHTML = '';
     document.getElementById('buffer-chartdiv').style.display = 'none';
     document.getElementById('buffer-table').innerHTML = '';
+    // Remove existing layer
+    if (bufferAnalysisWmsLayer) {
+      map.removeLayer(bufferAnalysisWmsLayer);
+    }
   });
 
   async function performBufferAnalysis(buffer, map, radius) {
@@ -407,6 +415,37 @@ export function initBufferDrawing(map) {
       const result = await response.json();
       console.log('Buffer analysis result:', result);
       displayBufferResults(result, map);
+
+
+
+
+      // Remove existing layer
+      if (bufferAnalysisWmsLayer) {
+        map.removeLayer(bufferAnalysisWmsLayer);
+      }
+
+      // Get map extent for BBOX
+      const extent = map.getView().calculateExtent(map.getSize());
+
+      bufferAnalysisWmsLayer = new TileLayer({
+        source: new TileWMS({
+          url: "http://localhost:3010/api/clip-wms",
+          crossOrigin: "anonymous",   // IMPORTANT
+
+          params: {
+            LAYERS: bufferselectedFile,
+            boundaryWkt: wkt,
+            inputmode: 'wkt'
+          },
+          serverType: "geoserver"
+        }),
+        preload: Infinity
+      });
+
+
+      // Add layer to map
+      map.addLayer(bufferAnalysisWmsLayer);
+
     } catch (err) {
       console.error('Error performing buffer analysis:', err);
 

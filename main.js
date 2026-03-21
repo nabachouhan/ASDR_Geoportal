@@ -86,7 +86,7 @@ import { wmsLayerMap, initializeSidebar } from './public/js/categorywiselayers.j
 import { upload, uploadClear } from "./public/js/upload.js";
 import { loc, clearLocation } from "./public/js/geocodelocator.js";
 
-import {geojson2kml} from "./public/js/geojson2kml.js"
+import { initUniversalConverter } from "./public/js/geojson2kml.js"
 
 // const source = new VectorSource();
 
@@ -230,9 +230,9 @@ document.getElementById("sidebar-upload-btn").addEventListener("click", () => {
   display_toggle_block("upload");
 });
 
-document.getElementById("sidebar-geojson2kml-btn").addEventListener("click", () => {
-  display_toggle_block("geojson2kml");
-  geojson2kml();
+document.getElementById("sidebar-universalconverter-btn").addEventListener("click", () => {
+  display_toggle_block("universalconverter");
+  initUniversalConverter();
 });
 
 document.getElementById("sidebar-geocode-btn").addEventListener("click", () => {
