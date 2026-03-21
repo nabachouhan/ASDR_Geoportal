@@ -23,6 +23,7 @@ export let bufferGeometryType = 'Point';
 export let bufferSource = '';
 let currentDrawInteraction = null;
 let bufferLayer = null;
+let drawSource = null;  // Separate source for drawing preview (prevents flickering)
 
 export async function bufferoptionload(map) {
   const buffercategoryOptions = document.getElementById('bufferlayer-theme');
@@ -155,29 +156,58 @@ fileInput.addEventListener('input', () => {
   fileOptions.style.display = 'block';
 });
 
+// Helper: format area value with smart unit selection
+function formatArea(sqMeters) {
+  if (sqMeters >= 1e6) {
+    return `${(sqMeters / 1e6).toFixed(3)} km²`;
+  }
+  return `${sqMeters.toFixed(2)} m²`;
+}
+
+// Helper: format length value with smart unit selection
+function formatLength(meters) {
+  if (meters >= 1000) {
+    return `${(meters / 1000).toFixed(3)} km`;
+  }
+  return `${meters.toFixed(2)} m`;
+}
+
 export function initBufferDrawing(map) {
   if (!bufferLayer) {
     bufferSource = new VectorSource();
     bufferLayer = new VectorLayer({
       source: bufferSource,
       zIndex: 10,
-      updateWhileAnimating: false,
-      updateWhileInteracting: false,
+      updateWhileAnimating: true,
+      updateWhileInteracting: true,
     });
     map.addLayer(bufferLayer);
   }
 
+  // Separate draw source to avoid clearing result features during drawing (prevents flickering)
+  if (!drawSource) {
+    drawSource = new VectorSource();
+    const drawLayer = new VectorLayer({
+      source: drawSource,
+      zIndex: 11,
+      updateWhileAnimating: true,
+      updateWhileInteracting: true,
+    });
+    map.addLayer(drawLayer);
+  }
+
   function createDrawInteraction() {
     return new Draw({
-      source: bufferLayer.getSource(),
-      type: bufferGeometryType,
+      source: drawSource,
+      type: bufferGeometryType === 'LineString' ? 'LineString' : bufferGeometryType,
       stopClick: true,
       freehand: false,
     });
   }
 
   document.getElementById('createBuffer').addEventListener('click', () => {
-    const radius = parseFloat(document.getElementById('buffer-radius').value) || 5000;
+    const radiusRaw = document.getElementById('buffer-radius').value;
+    const radius = radiusRaw === '' ? 100 : parseFloat(radiusRaw);
 
     // KML upload mode: read and parse the uploaded KML file
     if (bufferGeometryType === 'kml') {
@@ -239,17 +269,12 @@ export function initBufferDrawing(map) {
     currentDrawInteraction.on('drawend', async (event) => {
       const feature = event.feature;
       const geometry = feature.getGeometry();
-      const radius = parseFloat(document.getElementById('buffer-radius').value) || 5000;
+      const radiusInputVal = document.getElementById('buffer-radius').value;
+      const radius = radiusInputVal === '' ? 100 : parseFloat(radiusInputVal);
       console.log('Radius (meters):', radius);
 
-      if (isNaN(radius) || radius <= 0) {
-        alert("Please enter a valid radius value.");
-        return;
-      }
-      if (radius < 1) {
-        alert("Radius is too small. Please enter a value in meters (e.g., 1000 for 1km).");
-        map.removeInteraction(currentDrawInteraction);
-        currentDrawInteraction = null;
+      if (isNaN(radius) || radius < 0) {
+        alert("Please enter a valid radius value (0 or greater).");
         return;
       }
 
@@ -263,7 +288,14 @@ export function initBufferDrawing(map) {
         } else if (bufferGeometryType === 'LineString') {
           const coordinates = geometry.getCoordinates();
           const lonLatCoords = coordinates.map(coord => transform(coord, map.getView().getProjection(), 'EPSG:4326'));
-          const line = turf.lineString(lonLatCoords);
+          // Force open linestring: if user closed the line (first == last), remove the duplicate last point
+          const firstPt = lonLatCoords[0];
+          const lastPt = lonLatCoords[lonLatCoords.length - 1];
+          const isClosed = firstPt[0] === lastPt[0] && firstPt[1] === lastPt[1];
+          const openCoords = isClosed ? lonLatCoords.slice(0, -1) : lonLatCoords;
+          // Need at least 2 points for a valid linestring
+          const lineCoords = openCoords.length >= 2 ? openCoords : lonLatCoords;
+          const line = turf.lineString(lineCoords);
           buffer = turf.buffer(line, radius, { units: 'meters' });
         } else if (bufferGeometryType === 'Polygon') {
           const coordinates = geometry.getCoordinates();
@@ -282,15 +314,35 @@ export function initBufferDrawing(map) {
         return;
       }
 
-      const bufferCoords = buffer.geometry.type === 'Polygon'
-        ? buffer.geometry.coordinates[0].map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection()))
-        : buffer.geometry.coordinates.map(ring => ring.map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection())));
+      // Normalise buffer to a single Polygon (merges MultiPolygon from overlapping line-buffer ends)
+      let normalisedBuffer = buffer;
+      if (buffer.geometry.type === 'MultiPolygon') {
+        try { normalisedBuffer = turf.union(...buffer.geometry.coordinates.map((rings) => turf.polygon(rings))); }
+        catch (_) { normalisedBuffer = buffer; }
+      }
 
-      const bufferFeature = new Feature({
-        geometry: new Polygon(buffer.geometry.type === 'Polygon' ? [bufferCoords] : bufferCoords),
-        type: 'buffer'
-      });
+      // Build OL coordinates from normalised geometry (handles both Polygon and MultiPolygon)
+      let olGeometry;
+      if (normalisedBuffer.geometry.type === 'Polygon') {
+        const rings = normalisedBuffer.geometry.coordinates.map(ring =>
+          ring.map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection()))
+        );
+        olGeometry = new Polygon(rings);
+      } else {
+        // Still MultiPolygon after union — render each polygon separately
+        const allRings = [];
+        normalisedBuffer.geometry.coordinates.forEach(poly =>
+          poly.forEach(ring =>
+            allRings.push(ring.map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection())))
+          )
+        );
+        olGeometry = new Polygon(allRings);
+      }
 
+      const bufferFeature = new Feature({ geometry: olGeometry, type: 'buffer' });
+
+      // Clear draw preview and result layers separately to avoid flickering
+      drawSource.clear();
       bufferLayer.getSource().clear();
       bufferLayer.getSource().addFeature(bufferFeature);
 
@@ -311,11 +363,14 @@ export function initBufferDrawing(map) {
     if (bufferLayer) {
       bufferLayer.getSource().clear();
     }
+    if (drawSource) {
+      drawSource.clear();
+    }
     if (currentDrawInteraction) {
       map.removeInteraction(currentDrawInteraction);
       currentDrawInteraction = null;
     }
-    document.getElementById('buffer-head').innerHTML = '';;
+    document.getElementById('buffer-head').innerHTML = '';
     document.getElementById('buffer-chartdiv').style.display = 'none';
     document.getElementById('buffer-table').innerHTML = '';
   });
@@ -416,11 +471,19 @@ export function initBufferDrawing(map) {
             datalabels: {
               color: '#fff',
               font: { size: 11, weight: 'bold' },
+              // Only show label when slice is big enough (>=5%) — reduces congestion
+              display: (ctx2) => {
+                const total = ctx2.dataset.data.reduce((a, b) => a + b, 0);
+                const pct = (ctx2.dataset.data[ctx2.dataIndex] / total) * 100;
+                return pct >= 5;
+              },
               formatter: (value, ctx2) => {
                 const total = ctx2.dataset.data.reduce((a, b) => a + b, 0);
                 const pct = ((value / total) * 100).toFixed(1);
-                return `${value}\n(${pct}%)`;
-              }
+                return `${pct}%`;
+              },
+              textShadowBlur: 4,
+              textShadowColor: 'rgba(0,0,0,0.5)',
             }
           }
         },
@@ -435,16 +498,17 @@ export function initBufferDrawing(map) {
         createChart(Object.keys(result.categoryCounts), Object.values(result.categoryCounts), 'Features by Category');
       }
     } else if (result.geometryType === 'LineString' || result.geometryType === 'MultiLineString') {
-      htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Total length within buffer:</strong> ${result.totalLength ? result.totalLength.toFixed(2) : 0} meters</p>`;
+      const totalLengthFormatted = formatLength(result.totalLength || 0);
+      htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Total length within buffer:</strong> ${totalLengthFormatted}</p>`;
       if (result.categoryLengths && Object.keys(result.categoryLengths).length > 0) {
         createChart(Object.keys(result.categoryLengths), Object.values(result.categoryLengths), 'Length by Category');
       }
     } else if (result.geometryType === 'Polygon' || result.geometryType === 'MultiPolygon') {
-      const totalArea = result.totalArea ? result.totalArea.toFixed(2) : 0;
-      const bufferArea = result.bufferArea ? result.bufferArea.toFixed(2) : 0;
+      const totalAreaFormatted = formatArea(result.totalArea || 0);
+      const bufferAreaFormatted = formatArea(result.bufferArea || 0);
       const percentage = result.percentageCovered || 0;
-      htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Total area within buffer:</strong> ${totalArea} sq meters</p>`;
-      htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer area:</strong> ${bufferArea} sq meters</p>`;
+      htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Total area within buffer:</strong> ${totalAreaFormatted}</p>`;
+      htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Buffer area:</strong> ${bufferAreaFormatted}</p>`;
       htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Percentage covered:</strong> ${percentage}%</p>`;
       if (result.categoryAreas && Object.keys(result.categoryAreas).length > 0) {
         htmlHead += `<p style="font-family: Arial, sans-serif; font-size: 14px; color: #444;"><strong>Area by Category:</strong></p>`;
