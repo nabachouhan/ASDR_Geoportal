@@ -313,16 +313,18 @@ async function fetchFeatureInfo(theme, fileName, cql, limit = 100, offset = 0) {
     });
 
     const data = await response.json();
-    const bbox4326 = data.bbox;
     console.log(data);
     
-    // Transform to EPSG:3857 (Web Mercator) for OpenLayers
-const bbox3857 = transformExtent(bbox4326, 'EPSG:4326', 'EPSG:3857');
+    if (data.bbox) {
+      const bbox4326 = data.bbox;
+      // Transform to EPSG:3857 (Web Mercator) for OpenLayers
+      const bbox3857 = transformExtent(bbox4326, 'EPSG:4326', 'EPSG:3857');
 
-    map.getView().fit(bbox3857, {
-    duration: 1000, // optional: smooth zoom effect (1 second)
-    padding: [50, 50, 50, 50], // optional: padding around the box
-  });
+      map.getView().fit(bbox3857, {
+        duration: 1000, // optional: smooth zoom effect (1 second)
+        padding: [50, 50, 50, 50], // optional: padding around the box
+      });
+    }
 
     if (response.ok) {
       console.log(data);

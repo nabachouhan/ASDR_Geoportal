@@ -1,5 +1,8 @@
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
+import { transformExtent } from "ol/proj";
+
+import { map } from "./baseLayers.js";
 
 // Initialize dropdown states
 export let selectedCategoryForDistrictwise = '';
@@ -196,13 +199,13 @@ export async function withinDistrictFilteronload() {
 export async function withinDistrictFilteronload2() {
   console.log("withinDistrictFilteronload2 - initialising hierarchy...");
 
-  const districtInput  = document.getElementById('sidebar-filter-district');
+  const districtInput = document.getElementById('sidebar-filter-district');
   const districtOptions = document.getElementById('sidebar-filter-district-Options');
-  const circleInput   = document.getElementById('sidebar-filter-circle');
-  const circleOptions  = document.getElementById('sidebar-filter-circle-Options');
-  const blockInput    = document.getElementById('sidebar-filter-block');
-  const blockOptions   = document.getElementById('sidebar-filter-block-Options');
-  const villageInput  = document.getElementById('sidebar-filter-village');
+  const circleInput = document.getElementById('sidebar-filter-circle');
+  const circleOptions = document.getElementById('sidebar-filter-circle-Options');
+  const blockInput = document.getElementById('sidebar-filter-block');
+  const blockOptions = document.getElementById('sidebar-filter-block-Options');
+  const villageInput = document.getElementById('sidebar-filter-village');
   const villageOptions = document.getElementById('sidebar-filter-village-Options');
 
   // ── helpers ──────────────────────────────────────────────────────────────
@@ -264,9 +267,9 @@ export async function withinDistrictFilteronload2() {
       populateDropdown(districtOptions, districtInput, districts, (value) => {
         // Reset all downstream levels
         selectedDistrictForDistrictwise = value;
-        selectedCircleForDistrictwise   = '';
-        selectedBlocktForDistrictwise   = '';
-        selectedVillagetForDistrictwise  = '';
+        selectedCircleForDistrictwise = '';
+        selectedBlocktForDistrictwise = '';
+        selectedVillagetForDistrictwise = '';
         clearDropdown(circleInput, circleOptions);
         clearDropdown(blockInput, blockOptions);
         clearDropdown(villageInput, villageOptions);
@@ -288,9 +291,9 @@ export async function withinDistrictFilteronload2() {
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const circles = await res.json();
       populateDropdown(circleOptions, circleInput, circles, (value) => {
-        selectedCircleForDistrictwise   = value;
-        selectedBlocktForDistrictwise   = '';
-        selectedVillagetForDistrictwise  = '';
+        selectedCircleForDistrictwise = value;
+        selectedBlocktForDistrictwise = '';
+        selectedVillagetForDistrictwise = '';
         clearDropdown(villageInput, villageOptions);
 
         // Circle selected → load villages scoped to this circle
@@ -307,8 +310,8 @@ export async function withinDistrictFilteronload2() {
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const blocks = await res.json();
       populateDropdown(blockOptions, blockInput, blocks, (value) => {
-        selectedBlocktForDistrictwise   = value;
-        selectedVillagetForDistrictwise  = '';
+        selectedBlocktForDistrictwise = value;
+        selectedVillagetForDistrictwise = '';
         clearDropdown(villageInput, villageOptions);
 
         if (value) {
@@ -382,14 +385,21 @@ export async function withinDistrictFilteronload2() {
   const clearBtn = document.getElementById('clearBoundaryLevelBufferFilter');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
-      selectedDistrictForDistrictwise  = '';
-      selectedCircleForDistrictwise    = '';
-      selectedBlocktForDistrictwise    = '';
-      selectedVillagetForDistrictwise   = '';
-      clearDropdown(districtInput, districtOptions);
+      selectedDistrictForDistrictwise = '';
+      selectedCircleForDistrictwise = '';
+      selectedBlocktForDistrictwise = '';
+      selectedVillagetForDistrictwise = '';
       clearDropdown(circleInput, circleOptions);
       clearDropdown(blockInput, blockOptions);
       clearDropdown(villageInput, villageOptions);
+
+      document.getElementById('buffer-head').innerHTML = '';;
+      document.getElementById('buffer-chartdiv').style.display = 'none';
+      document.getElementById('buffer-table').innerHTML = '';
+
+      if (analysisWmsLayer) {
+        map.removeLayer(analysisWmsLayer);
+      }
     });
   }
 
@@ -619,6 +629,14 @@ export async function performBoundaryLevelBufferAnalysis(map) {
     // Remove existing layer
     if (analysisWmsLayer) {
       map.removeLayer(analysisWmsLayer);
+    }
+
+    if (result.bbox) {
+      const bbox3857 = transformExtent(result.bbox, 'EPSG:4326', 'EPSG:3857');
+      map.getView().fit(bbox3857, {
+        duration: 1000,
+        padding: [50, 50, 50, 50]
+      });
     }
 
     // Get map extent for BBOX
