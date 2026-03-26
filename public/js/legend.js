@@ -1,3 +1,6 @@
+import config from "../../config.js";
+
+
 export function renderAllLegends(map) {
   createPreviewPanel();
 
@@ -37,8 +40,8 @@ export function renderAllLegends(map) {
         legendContainer.style.padding = '2px 0';
 
         const legendImg = document.createElement('img');
-        const legendUrl = `http://localhost:3010/api/legend/${encodeURIComponent(name)}`;
-        
+        const legendUrl = config.backendUrl + `/legend/${encodeURIComponent(name)}`;
+
         fetch(legendUrl)
           .then(res => {
             if (!res.ok) throw new Error("HTTP error " + res.status);
@@ -106,7 +109,7 @@ let previewPanelCreated = false;
 function createPreviewPanel() {
   if (previewPanelCreated) return;
   previewPanelCreated = true;
-  
+
   const panel = document.createElement('div');
   panel.id = 'legend-preview-panel';
   panel.style.display = 'none';
@@ -118,7 +121,7 @@ function createPreviewPanel() {
   panel.style.border = '1px solid #ccc';
   panel.style.borderRadius = '4px';
   panel.style.boxShadow = '0 4px 15px rgba(0,0,0,0.4)';
-  
+
   const header = document.createElement('div');
   header.style.padding = '5px 10px';
   header.style.backgroundColor = '#00625A';
@@ -128,13 +131,13 @@ function createPreviewPanel() {
   header.style.justifyContent = 'space-between';
   header.style.alignItems = 'center';
   header.style.borderRadius = '4px 4px 0 0';
-  
+
   const title = document.createElement('span');
   title.textContent = 'Legend Preview';
   title.style.fontSize = '14px';
   title.style.fontWeight = 'bold';
   title.style.marginRight = '20px';
-  
+
   const closeBtn = document.createElement('span');
   closeBtn.innerHTML = '&times;';
   closeBtn.style.cursor = 'pointer';
@@ -142,36 +145,36 @@ function createPreviewPanel() {
   closeBtn.style.fontWeight = 'bold';
   closeBtn.style.color = '#fff';
   closeBtn.onclick = () => panel.style.display = 'none';
-  
+
   header.appendChild(title);
   header.appendChild(closeBtn);
-  
+
   const content = document.createElement('div');
   content.style.padding = '10px';
   content.style.overflow = 'auto';
   content.style.maxHeight = '80vh';
   content.style.maxWidth = '80vw';
   content.style.backgroundColor = '#fff';
-  
+
   const img = document.createElement('img');
   img.id = 'legend-preview-img';
   img.style.display = 'block';
-  
+
   content.appendChild(img);
   panel.appendChild(header);
   panel.appendChild(content);
   document.body.appendChild(panel);
-  
+
   // Drag logic
   let isDragging = false;
   let offsetX, offsetY;
-  
+
   header.addEventListener('mousedown', (e) => {
     isDragging = true;
     offsetX = e.clientX - panel.offsetLeft;
     offsetY = e.clientY - panel.offsetTop;
   });
-  
+
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
       panel.style.left = (e.clientX - offsetX) + 'px';
@@ -179,7 +182,7 @@ function createPreviewPanel() {
       panel.style.right = 'auto'; // Reset right anchor
     }
   });
-  
+
   document.addEventListener('mouseup', () => {
     isDragging = false;
   });

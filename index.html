@@ -204,16 +204,17 @@
           <div class="side_menu_container_optins">
             <li id="sidebar-universalconverter-btn">Universal Format Converter</li>
             <div class="side_menu_cat2" id="universalconverter" style="display: none;">
-              <label for="converterFileInput">Input File <span style="color: red; font-size: .8em;"> .GeoJSON, .kml, .zip</span></label>
+              <label for="converterFileInput">Input File <span style="color: red; font-size: .8em;"> .GeoJSON, .kml,
+                  .zip</span></label>
               <input type="file" id="converterFileInput" accept=".geojson,.json,.kml,.zip">
-              
+
               <label for="converterOutputFormat" style="display: block; margin-top: 10px;">Output Format:</label>
-              <select id="converterOutputFormat" style="width: 100%; margin-bottom: 10px; padding: 4px;">
+              <select id="converterOutputFormat">
                 <option value="geojson">GeoJSON (.geojson)</option>
                 <option value="kml">KML (.kml)</option>
-                <option value="shapefile">Shapefile (.zip)</option>
+                <!-- <option value="shapefile">Shapefile (.zip)</option> -->
               </select>
-              
+
               <button id="converterDownloadBtn">Convert & Download</button>
             </div>
           </div>
@@ -350,8 +351,11 @@
                 <input type="text" id="lon" placeholder="Longitude" value="">
 
               </form>
-              <button id="locate_Pindrop">Pindrop</button>
-              <button id="locate_Pinremove">Remove</button>
+              <div style="display: flex; flex-direction: row; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
+                <button id="locate_Pindrop" style="flex: 1; width: 10%;">Drop</button>
+                <button id="manual_Pindrop" style="flex: 1; width: 50%;">Drop Manually</button>
+                <button id="locate_Pinremove" style="flex: 1; width: 20%;">Remove</button>
+              </div>
             </ul>
           </li>
           <!-- Pin Drop -->
@@ -455,7 +459,7 @@
           </li>
 
           <li class="sidebar_items">
-            <span class="material-symbols-outlined" id="info-content-btn" title="Buffer Analysis Results">info</span>
+            <span class="material-symbols-outlined" id="info-content-btn" title="Buffer Analysis Results">table</span>
             <div id="buffer-results">
               <div id="buffer-head"></div>
               <div id="buffer-chartdiv" style="display: none; width: 460px; height: 210px; margin: 15px auto;">
@@ -466,7 +470,7 @@
           </li>
 
           <li class="sidebar_items">
-            <span class="material-symbols-outlined" id="info-content2-btn" title="Query Results">info</span>
+            <span class="material-symbols-outlined" id="info-content2-btn" title="Query Results">table</span>
             <div id="query-results">
               <div id="query-head"></div>
               <div id="query-chartdiv" style="display: none; width: 460px; height: 210px; margin: 15px auto;">

@@ -10,6 +10,9 @@ import * as turf from '@turf/turf';
 import GeoJSON from 'ol/format/GeoJSON';
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
+import { wmsLayerMap } from "./categorywiselayers.js";
+import config from "../../config.js";
+
 
 export let bufferselectedCategory = '';
 export let bufferselectedFile = '';
@@ -38,7 +41,7 @@ export async function bufferoptionload(map) {
 
   async function bufferloadCategories() {
     try {
-      const response = await fetch('http://localhost:3010/api/themes');
+      const response = await fetch(config.backendUrl + '/themes');
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const themes = await response.json();
       console.log('Fetched themes:', themes);
@@ -56,7 +59,7 @@ export async function bufferoptionload(map) {
 
   async function bufferloadFiles(theme) {
     try {
-      const response = await fetch(`http://localhost:3010/api/files/${theme}`);
+      const response = await fetch(config.backendUrl + `/files/${theme}`);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const files = await response.json();
       console.log('Fetched files for theme', theme, ':', files);
@@ -74,7 +77,7 @@ export async function bufferoptionload(map) {
 
   async function bufferloadAttributes(theme, file) {
     try {
-      const response = await fetch(`http://localhost:3010/api/attributes/${theme}/${file}`);
+      const response = await fetch(config.backendUrl + `/attributes/${theme}/${file}`);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const attributes = await response.json();
       console.log('Fetched attributes for theme', theme, ':', attributes);
@@ -236,21 +239,47 @@ export function initBufferDrawing(map) {
           bufferLayer.getSource().clear();
           features.forEach(f => bufferLayer.getSource().addFeature(f));
 
-          // Union all geometries and buffer
+          // Buffer each individual geometry (Point, LineString, Polygon) natively
           const geoJson = new GeoJSON();
           const turfFeatures = features.map(f =>
             geoJson.writeFeatureObject(f, { dataProjection: 'EPSG:4326', featureProjection: map.getView().getProjection() })
           );
-          const union = turfFeatures.reduce((acc, cur) => acc ? turf.union(acc, cur) : cur, null);
-          const buffer = turf.buffer(union, radius, { units: 'meters' });
+          const featureCollection = turf.featureCollection(turfFeatures);
+          const bufferedFC = turf.buffer(featureCollection, radius, { units: 'meters' });
 
-          const bufferCoords = buffer.geometry.coordinates[0].map(coord =>
-            transform(coord, 'EPSG:4326', map.getView().getProjection())
-          );
-          const bufferFeature = new Feature({ geometry: new Polygon([bufferCoords]), type: 'buffer' });
+          // Union all resulting buffer polygons into a single continuous footprint
+          let buffer = null;
+          turf.featureEach(bufferedFC, (ptBuffer) => {
+            if (!ptBuffer) return;
+            if (!buffer) {
+              buffer = ptBuffer;
+            } else {
+              try { buffer = turf.union(buffer, ptBuffer) || buffer; }
+              catch (e) { console.error('Error unioning buffers:', e); }
+            }
+          });
+
+          if (!buffer) { alert('Failed to generate buffers from KML geometries.'); return; }
+
+          let olGeometry;
+          if (buffer.geometry.type === 'Polygon') {
+            const rings = buffer.geometry.coordinates.map(ring =>
+              ring.map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection()))
+            );
+            olGeometry = new Polygon(rings);
+          } else {
+            const MultiPolygon = (await import('ol/geom/MultiPolygon')).default;
+            const polys = buffer.geometry.coordinates.map(poly =>
+              poly.map(ring => ring.map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection())))
+            );
+            olGeometry = new MultiPolygon(polys);
+          }
+
+          const bufferFeature = new Feature({ geometry: olGeometry, type: 'buffer' });
           bufferFeature.setStyle(new Style({
             fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' }),
-            stroke: new Stroke({ color: '#FF0000', width: 2 })
+            stroke: new Stroke({ color: '#FF0000', width: 2 }),
+            zIndex: 9
           }));
           bufferLayer.getSource().addFeature(bufferFeature);
           await performBufferAnalysis(buffer, map, radius);
@@ -333,14 +362,13 @@ export function initBufferDrawing(map) {
         );
         olGeometry = new Polygon(rings);
       } else {
-        // Still MultiPolygon after union — render each polygon separately
-        const allRings = [];
-        normalisedBuffer.geometry.coordinates.forEach(poly =>
-          poly.forEach(ring =>
-            allRings.push(ring.map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection())))
+        const MultiPolygon = (await import('ol/geom/MultiPolygon')).default;
+        const polys = normalisedBuffer.geometry.coordinates.map(poly =>
+          poly.map(ring =>
+            ring.map(coord => transform(coord, 'EPSG:4326', map.getView().getProjection()))
           )
         );
-        olGeometry = new Polygon(allRings);
+        olGeometry = new MultiPolygon(polys);
       }
 
       const bufferFeature = new Feature({ geometry: olGeometry, type: 'buffer' });
@@ -380,6 +408,7 @@ export function initBufferDrawing(map) {
     // Remove existing layer
     if (bufferAnalysisWmsLayer) {
       map.removeLayer(bufferAnalysisWmsLayer);
+      wmsLayerMap.forEach((layer, key) => { if (layer === bufferAnalysisWmsLayer) wmsLayerMap.delete(key); });
     }
   });
 
@@ -390,16 +419,14 @@ export function initBufferDrawing(map) {
     }
 
     try {
-      const wkt = new WKT().writeGeometry(
-        new Polygon(buffer.geometry.type === 'Polygon'
-          ? buffer.geometry.coordinates
-          : buffer.geometry.coordinates
-        )
-      );
+      const format = new GeoJSON();
+      const olGeom = format.readGeometry(buffer.geometry);
+      const wkt = new WKT().writeGeometry(olGeom);
+
       console.log('Buffer WKT:', wkt);
       const clientBufferArea = turf.area(buffer) * 1e6; // Convert to sq meters
       console.log('Client buffer area (sq meters):', clientBufferArea);
-      const response = await fetch('http://localhost:3010/api/buffer-analysis', {
+      const response = await fetch(config.backendUrl + '/buffer-analysis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -422,6 +449,7 @@ export function initBufferDrawing(map) {
       // Remove existing layer
       if (bufferAnalysisWmsLayer) {
         map.removeLayer(bufferAnalysisWmsLayer);
+        wmsLayerMap.forEach((layer, key) => { if (layer === bufferAnalysisWmsLayer) wmsLayerMap.delete(key); });
       }
 
       // Get map extent for BBOX
@@ -429,7 +457,7 @@ export function initBufferDrawing(map) {
 
       bufferAnalysisWmsLayer = new TileLayer({
         source: new TileWMS({
-          url: "http://localhost:3010/api/clip-wms",
+          url: config.backendUrl + "/clip-wms",
           crossOrigin: "anonymous",   // IMPORTANT
 
           params: {
@@ -445,6 +473,7 @@ export function initBufferDrawing(map) {
 
       // Add layer to map
       map.addLayer(bufferAnalysisWmsLayer);
+      wmsLayerMap.set(bufferselectedFile, bufferAnalysisWmsLayer);
 
     } catch (err) {
       console.error('Error performing buffer analysis:', err);

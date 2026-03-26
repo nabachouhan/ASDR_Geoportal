@@ -1,14 +1,12 @@
 @media only screen and (max-width: 730px) {
-    #nav_title h2{
+    #nav_title h2 {
         font-size: 10px;
         letter-spacing: 4px;
-    
         text-align: center;
     }
-    #nav_title{
-        margin:8px 4px ;
+    #nav_title {
+        margin: 8px 4px;
         margin-right: 45px;
-
     }
 }
 
@@ -17,36 +15,112 @@
         height: 59px;
     }
 
-    footer div{
+    footer div {
         flex-direction: column;
         margin: 3px 17px;
     }
-    footer div p{
+    footer div p {
         text-align: center;
         margin-bottom: 10px;
     }
 
-    #org_info p{
+    #org_info p {
         font-size: 10px;
     }
 
-    #long_lat{
+    #long_lat {
         font-size: 14px;
         display: flex;
         flex-direction: row;
     }
-    #long_lat input{
+    #long_lat input {
         width: 60px;
         margin-left: 10px;
     }
 }
 
-/* @media only screen and (max-width: 690px) {
-    h2 {
-        margin-top: 5px;
-        text-align: center;
-        font-size: 20px;
-        color: #ffffff;
-
+/* ── Tablet landscape ── */
+@media only screen and (max-width: 1024px) {
+    #buffer-results,
+    #query-results {
+        max-width: 90vw;
+        left: 50px;
     }
-} */
+
+    #querybuilder_tool {
+        left: 280px;
+    }
+
+    .queryTool-builder-form {
+        width: 95vw;
+    }
+
+    #base_layer_container {
+        right: 10px;
+    }
+
+    #base_layer_container #base_layer_menu {
+        right: 80px;
+    }
+}
+
+/* ── Tablet portrait ── */
+@media only screen and (max-width: 768px) {
+    #nav_title {
+        letter-spacing: 3px;
+        padding: 0 10px;
+        font-size: 9px;
+    }
+
+    #buffer-results,
+    #query-results {
+        left: 5px;
+        right: 5px;
+        max-width: 98vw;
+        min-width: unset;
+    }
+
+    #querybuilder_tool {
+        left: 5px;
+        top: 50px;
+    }
+
+    #sidebar-pindrop {
+        width: 90vw;
+    }
+
+    #Print_tool {
+        width: 180px;
+    }
+}
+
+/* ── Mobile ── */
+@media only screen and (max-width: 480px) {
+    #nav_title h2 {
+        display: none;
+    }
+
+    #base_layer_container {
+        top: 50px;
+        right: 5px;
+    }
+
+    #base_layer_container #base_layer_menu {
+        right: 75px;
+        width: 140px;
+    }
+
+    .side_menu_container_optins div button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    footer div {
+        flex-direction: column;
+    }
+
+    #sidebar-draw,
+    #sidebar-measure {
+        left: 50px;
+    }
+}

@@ -16,11 +16,13 @@ ul {
 
 #nav_bar {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     color: #fff;
     height: 42px;
+    z-index: 4;
+    position: relative;
 }
-
-
 
 #logo img {
     position: absolute;
@@ -28,22 +30,18 @@ ul {
     right: 10px;
     background-color: #fff;
     border-radius: 4px;
-    /* height: 40px; */
 }
-
 
 #nav_bar img {
     height: 35px;
 }
 
-
 #nav_title {
     font-size: 10px;
     letter-spacing: 7px;
-
-    margin: 11px 38px;
     text-align: center;
-    margin-right: 30px;
+    flex: 1;
+    padding: 0 50px;
 }
 
 .container {
@@ -474,43 +472,6 @@ select:dir(ltr) {
     top: calc(50% - 0.5em); 
 } */
 
-/* 
-#boundary_tool{
-    position: absolute;
-    top: 330px;
-    left: 269px;
-    display: none;
-    height: auto;
-    width: 180px;
-    background-color: #a4e7d1;
-    padding: 10px;
-    overflow: hidden;
-  
-    
-}
-
-#boundary_tool select{
-    width: 90%;
-    border: 1px solid  #00625A;
-    border-radius: 4px;
-    padding: 5px;
-    margin-bottom: 10px;
-}
-
-#boundary_tool.show{
-    display: block;
-}
-
-#boundary_tool button{
-    font-size: 15px;
-    border-radius: 7px;
-    padding: 5px 10px;
-    background-color: #2C8A6A;
-    margin: 7px 0 20px 0;
-    color: #fff;
-} */
-
-
 
 .boundary_tool select {
     width: 100%;
@@ -552,7 +513,7 @@ select:dir(ltr) {
     z-index: 1;
     background-color: #a4e7d1;
     padding: 10px;
-    width: 180px;
+    width: 210px;
 
 }
 
@@ -565,9 +526,9 @@ select:dir(ltr) {
 }
 
 #sidebar-pindrop button {
-    font-size: 15px;
+    font-size: 12px;
     border-radius: 7px;
-    padding: 5px 10px;
+    padding: 2px 3px;
     background-color: #2C8A6A;
     margin: 7px 0 20px 0;
     color: #fff;
@@ -682,8 +643,10 @@ footer #lonlat_display {
     background-color: #a4e7d1;
     position: absolute;
     top: 0;
-    right: 100px;
+    right: 90px;
     width: 170px;
+    max-height: 80vh;
+    overflow-y: auto;
     border: 1px solid #023C40;
     border-radius: 6px;
     display: none;
@@ -780,23 +743,21 @@ img {
     
 } */
 
+
 #scale-line-control {
     position: absolute;
-    width: 150px;
+    width: 270px;
     height: 20px;
     bottom: 50px;
     right: 240px;
-    font-weight: 600;
-    /* background-color: rgba(255, 255, 255, 0.5); */
+    font-weight: 900;
     font-size: 12px;
     z-index: 90;
     opacity: 1;
     padding: 40px;
-    font-weight: 900;
 }
 
 #scale-line-control-cont {
-
     padding: 40px;
     position: absolute;
     left: 670px;

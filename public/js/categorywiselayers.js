@@ -1,10 +1,12 @@
 
-export const wmsLayerMap  = new window.Map();
+export const wmsLayerMap = new window.Map();
 
 // sidebarManager.js
 
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
+import config from "../../config";
+
 
 const populatedThemes = new Set();
 let allLayersByTheme = {};
@@ -27,7 +29,7 @@ async function fetchAllLayers() {
   if (error) error.style.display = "none";
 
   try {
-    const response = await fetch("http://localhost:3010/api/layers");
+    const response = await fetch(config.backendUrl + "/layers");
     if (!response.ok) throw new Error("Failed to fetch layers");
     const data = await response.json();
 
@@ -88,14 +90,14 @@ function toggleSidebarSection(ul) {
 function addLayerToMap(layer, map) {
   const wmsLayer = new TileLayer({
     source: new TileWMS({
-      url: 'http://localhost:3010/api/wms',
+      url: config.backendUrl + "/wms",
       params: {
         'LAYERS': layer.file_name,
         'TILED': true,
         'FORMAT': 'image/png',
         'TRANSPARENT': true,
       },
-          crossOrigin: 'anonymous' ,
+      crossOrigin: 'anonymous',
       projection: `EPSG:${layer.srid || 4326}`,
       serverType: 'geoserver',
     }),

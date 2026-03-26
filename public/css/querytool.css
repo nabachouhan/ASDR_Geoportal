@@ -1,12 +1,10 @@
       
-.queryTool-builder-form{
+.queryTool-builder-form {
     border-radius: 10px;
-    width: 500px; /* Increased width to accommodate more buttons */
+    width: 500px;
+    max-width: 95vw;
     box-shadow: 0 4px 8px rgba(5, 5, 5, 0.258);
     z-index: 100;
-    /* position: absolute;
-    right: 100px; */
-    
 }
 
 #queryTool-builder-container {
@@ -195,16 +193,9 @@ cursor: pointer;
 background-color: #f0f0f0;
 }
 
-#querybuilder_tool{
+#querybuilder_tool {
     display: none;
-}
-#querybuilder_tool{
     position: absolute;
-    top:10px;
+    top: 10px;
     left: 500px;
-
 }
-.queryTool-header{
-    
-}
-

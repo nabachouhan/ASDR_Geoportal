@@ -1,3 +1,5 @@
+import config from "../../config.js";
+
 // Initialize state
 export let selectedCategory = '';
 export let selectedFile = '';
@@ -114,7 +116,7 @@ export async function querytooloptionload() {
   // Load categories, files, attributes (unchanged, just minor cleanup)
   async function loadCategories() {
     try {
-      const response = await fetch('http://localhost:3010/api/themes');
+      const response = await fetch(config.backendUrl + "/themes");
       const themes = await response.json();
       categoryOptions.innerHTML = '<div class="dropdown-option" data-value="">Select...</div>';
       themes.forEach(theme => {
@@ -138,7 +140,7 @@ export async function querytooloptionload() {
 
   async function loadFiles(theme) {
     try {
-      const response = await fetch(`http://localhost:3010/api/files/${theme}`);
+      const response = await fetch(config.backendUrl + `/files/${theme}`);
       const files = await response.json();
       fileOptions.innerHTML = '';
       files.forEach(file => {
@@ -160,7 +162,7 @@ export async function querytooloptionload() {
 
   async function loadAttributes(theme, fileName) {
     try {
-      const response = await fetch(`http://localhost:3010/api/attributes/${theme}/${fileName}`);
+      const response = await fetch(config.backendUrl + `/attributes/${theme}/${fileName}`);
       const attributes = await response.json();
       labelSelect.innerHTML = '<option value="">-- Select --</option>';
       leftSelect.innerHTML = '';
@@ -186,7 +188,7 @@ export async function querytooloptionload() {
 
   async function loadValues(theme, fileName, attribute) {
     try {
-      const response = await fetch(`http://localhost:3010/api/values/${theme}/${fileName}/${attribute}`);
+      const response = await fetch(config.backendUrl + `/values/${theme}/${fileName}/${attribute}`);
       const values = await response.json();
       rightSelect.innerHTML = '';
       values.forEach(value => {

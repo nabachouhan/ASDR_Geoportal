@@ -3,6 +3,9 @@ import TileWMS from 'ol/source/TileWMS';
 import { transformExtent } from "ol/proj";
 
 import { map } from "./baseLayers.js";
+import { wmsLayerMap } from "./categorywiselayers.js";
+import config from "../../config.js";
+
 
 // Initialize dropdown states
 export let selectedCategoryForDistrictwise = '';
@@ -33,7 +36,7 @@ export async function withinDistrictFilteronload() {
     console.log("loadCategoriesForDistrictwise.");
 
     try {
-      const response = await fetch('http://localhost:3010/api/themes');
+      const response = await fetch(config.backendUrl + '/themes');
       console.log("responseresponse.");
 
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -63,7 +66,7 @@ export async function withinDistrictFilteronload() {
   // Fetch and populate files for a category
   async function loadFilesForDistrictwise(theme) {
     try {
-      const response = await fetch(`http://localhost:3010/api/files/${theme}`);
+      const response = await fetch(config.backendUrl + '/files/' + theme);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const files = await response.json();
       console.log('Fetched files for theme', theme, ':', files); // Debug log
@@ -120,7 +123,7 @@ export async function withinDistrictFilteronload() {
   // Fetch and populate attributes for a file
   async function loadAttributes(theme, fileName) {
     try {
-      const response = await fetch(`http://localhost:3010/api/attributes/${theme}/${fileName}`);
+      const response = await fetch(config.backendUrl + `/attributes/${theme}/${fileName}`);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const attributes = await response.json();
       console.log('Fetched attributes for file', fileName, ':', attributes); // Debug log
@@ -261,7 +264,7 @@ export async function withinDistrictFilteronload2() {
 
   async function loadDistrict() {
     try {
-      const res = await fetch('http://localhost:3010/api/getdistricts');
+      const res = await fetch(config.backendUrl + '/getdistricts');
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const districts = await res.json();
       populateDropdown(districtOptions, districtInput, districts, (value) => {
@@ -287,7 +290,7 @@ export async function withinDistrictFilteronload2() {
 
   async function loadCircles(district) {
     try {
-      const res = await fetch(`http://localhost:3010/api/getCircles/${district}`);
+      const res = await fetch(config.backendUrl + '/getCircles/' + district);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const circles = await res.json();
       populateDropdown(circleOptions, circleInput, circles, (value) => {
@@ -306,7 +309,7 @@ export async function withinDistrictFilteronload2() {
 
   async function loadBlocks(district) {
     try {
-      const res = await fetch(`http://localhost:3010/api/getblocks/${district}`);
+      const res = await fetch(config.backendUrl + '/getblocks/' + district);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const blocks = await res.json();
       populateDropdown(blockOptions, blockInput, blocks, (value) => {
@@ -332,7 +335,7 @@ export async function withinDistrictFilteronload2() {
   // Villages filtered by circle (API: getvillages/:district/:circle)
   async function loadVillagesByCircle(circle) {
     try {
-      const res = await fetch(`http://localhost:3010/api/getvillages/${selectedDistrictForDistrictwise}/${circle}`);
+      const res = await fetch(config.backendUrl + `/getvillages/${selectedDistrictForDistrictwise}/${circle}`);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const villages = await res.json();
       populateDropdown(villageOptions, villageInput, villages, (value) => {
@@ -346,7 +349,7 @@ export async function withinDistrictFilteronload2() {
   // Villages filtered by district + block (fallback when no circle chosen)
   async function loadVillagesByBlock(district, block) {
     try {
-      const res = await fetch(`http://localhost:3010/api/getvillages/${district}/${block}`);
+      const res = await fetch(config.backendUrl + `/getvillages/${district}/${block}`);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const villages = await res.json();
       populateDropdown(villageOptions, villageInput, villages, (value) => {
@@ -399,6 +402,7 @@ export async function withinDistrictFilteronload2() {
 
       if (analysisWmsLayer) {
         map.removeLayer(analysisWmsLayer);
+        wmsLayerMap.forEach((layer, key) => { if (layer === analysisWmsLayer) wmsLayerMap.delete(key); });
       }
     });
   }
@@ -608,7 +612,7 @@ export async function performBoundaryLevelBufferAnalysis(map) {
   try {
     selectedCategoryFieldForDistrictwise = document.getElementById("sidebar-filter-attribute").value;
 
-    const response = await fetch('http://localhost:3010/api/within-admin-bound', {
+    const response = await fetch(config.backendUrl + '/within-admin-bound', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -629,6 +633,7 @@ export async function performBoundaryLevelBufferAnalysis(map) {
     // Remove existing layer
     if (analysisWmsLayer) {
       map.removeLayer(analysisWmsLayer);
+      wmsLayerMap.forEach((layer, key) => { if (layer === analysisWmsLayer) wmsLayerMap.delete(key); });
     }
 
     if (result.bbox) {
@@ -662,7 +667,7 @@ export async function performBoundaryLevelBufferAnalysis(map) {
 
     analysisWmsLayer = new TileLayer({
       source: new TileWMS({
-        url: "http://localhost:3010/api/clip-wms",
+        url: config.backendUrl + "/clip-wms",
         crossOrigin: "anonymous",   // IMPORTANT
 
         params: {
@@ -679,6 +684,7 @@ export async function performBoundaryLevelBufferAnalysis(map) {
 
     // Add layer to map
     map.addLayer(analysisWmsLayer);
+    wmsLayerMap.set(selectedFileForDistrictwise, analysisWmsLayer);
 
     displayBoundaryLevelResults(result, map);
   } catch (err) {

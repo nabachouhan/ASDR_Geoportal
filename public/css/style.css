@@ -1,21 +1,10 @@
 @import "ol/ol.css";
-html,
 
-*{
-  font-family: 'roboto';
-}
-
-.montserrat-#nav_bar {
-  font-family: "Montserrat", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
-  font-style: normal;
-}
-
-*{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 body {
