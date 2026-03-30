@@ -112,7 +112,7 @@ export function loc() {
         new Style({
           image: new Icon({
             anchor: [0.5, 1],
-            src: "../icons/locationred.png",
+            src: import.meta.env.BASE_URL + "icons/locationred.png",
             scale: 0.2,
           }),
         })

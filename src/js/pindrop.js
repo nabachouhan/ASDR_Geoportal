@@ -15,7 +15,7 @@ function makePinStyle(lat, lon) {
   return new Style({
     image: new Icon({
       anchor: [0.5, 1],
-      src: "../icons/locationblue.png",
+      src: import.meta.env.BASE_URL + "icons/locationblue.png",
       scale: 0.3,
     }),
     text: new Text({

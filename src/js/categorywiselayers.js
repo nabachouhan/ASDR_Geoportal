@@ -5,7 +5,7 @@ export const wmsLayerMap = new window.Map();
 
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
-import config from "../../config";
+import config from "../config";
 
 
 const populatedThemes = new Set();

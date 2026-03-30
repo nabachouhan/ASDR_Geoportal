@@ -1,4 +1,8 @@
-import "./public/css/style.css";
+import "./css/style.css";
+import "./css/sidebar.css";
+import "./css/mediaStyle.css";
+import "./css/querytool.css";
+import "./css/infostyle.css";
 import "ol-layerswitcher/dist/ol-layerswitcher.css";
 
 import DragBox from "ol/interaction/DragBox.js";
@@ -18,18 +22,18 @@ import GeoJSON from "ol/format/GeoJSON";
 import {
   map,
   handleBaseToggle,
-} from "./public/js/baseLayers.js";
+} from "./js/baseLayers.js";
 
 import {
   pindrop
-} from "./public/js/pindrop.js";
+} from "./js/pindrop.js";
 
 import {
   customHome,
   customFullscreen,
   fullscreen_click,
   customZoom,
-} from "./public/js/interactions.js";
+} from "./js/interactions.js";
 
 import {
   handleDrawUndo,
@@ -37,56 +41,56 @@ import {
   handleMeasure,
   downloadDrawnFeatures,
   downloadMesuredFeatures
-} from "./public/js/drawAndMeasure.js";
+} from "./js/drawAndMeasure.js";
 
 import {
   toggleSidebar,
   display_toggle,
   display_toggle_block,
   display_toggle_block_adminState,
-} from "./public/js/sidebar.js";
+} from "./js/sidebar.js";
 
 
 
 import {
   querytooloptionload
-} from './public/js/querytoolpopulate.js'
+} from './js/querytoolpopulate.js'
 
 import {
   executeQuery,
-} from './public/js/querytoolrender.js'
+} from './js/querytoolrender.js'
 
 import {
   bufferoptionload, initBufferDrawing,bufferSource
-} from './public/js/bufferlayerpopulate.js'
+} from './js/bufferlayerpopulate.js'
 
 import{
   withinDistrictFilteronload,
   withinDistrictFilteronload2,
   performBoundaryLevelBufferAnalysis,
   displayBoundaryLevelResults
-} from './public/js/sidebarDropdown.js'
+} from './js/sidebarDropdown.js'
 
 import {
   renderAllLegends
-} from './public/js/legend.js'
+} from './js/legend.js'
 
 
 import {
   dragElement
-} from './public/js/dragablecontainer.js'
+} from './js/dragablecontainer.js'
 
 import {
   renderCoordinate,
   renderScaleBar
-} from './public/js/coordinateAndScale.js'
+} from './js/coordinateAndScale.js'
 
-import { wmsLayerMap, initializeSidebar } from './public/js/categorywiselayers.js'
+import { wmsLayerMap, initializeSidebar } from './js/categorywiselayers.js'
 
-import { upload, uploadClear } from "./public/js/upload.js";
-import { loc, clearLocation } from "./public/js/geocodelocator.js";
+import { upload, uploadClear } from "./js/upload.js";
+import { loc, clearLocation } from "./js/geocodelocator.js";
 
-import { initUniversalConverter } from "./public/js/geojson2kml.js"
+import { initUniversalConverter } from "./js/geojson2kml.js"
 
 // const source = new VectorSource();
 
@@ -118,11 +122,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 import {
   exportMapToPDF
-} from './public/js/print.js'
+} from './js/print.js'
 
 import {
   scaleLine
-} from './public/js/coordinateAndScale.js'
+} from './js/coordinateAndScale.js'
 // bufferloadCategories()
 // popup
 document.getElementById("info-toggle").addEventListener("click", function () {

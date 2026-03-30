@@ -11,7 +11,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
 import { wmsLayerMap } from "./categorywiselayers.js";
-import config from "../../config.js";
+import config from "../config.js";
 
 
 export let bufferselectedCategory = '';

@@ -4,7 +4,7 @@ import { transformExtent } from "ol/proj";
 
 import { map } from "./baseLayers.js";
 import { wmsLayerMap } from "./categorywiselayers.js";
-import config from "../../config.js";
+import config from "../config.js";
 
 
 // Initialize dropdown states

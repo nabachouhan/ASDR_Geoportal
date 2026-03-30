@@ -179,7 +179,7 @@ export const googleSatelliteLayer = new TileLayer({
 
 const assambound = new VectorImageLayer({
   source: new VectorSource({
-    url: "../json/assam_state_bound.geojson",
+    url: import.meta.env.BASE_URL + "json/assam_state_bound.geojson",
     format: new GeoJSON(),
   }),
   style: {
@@ -200,7 +200,7 @@ export const map = new Map({
     osm,
     standardLayer,
     transportLayer,
-    labelLayer, 
+    labelLayer,
     osmHot,
     cartoLight,
     cartoDark,

@@ -13,7 +13,7 @@ import Text from "ol/style/Text";
 import {
   queryObject,
 } from "./querytoolpopulate.js";
-import config from "../../config.js";
+import config from "../config.js";
 
 
 
